@@ -1,0 +1,188 @@
+/* 文件到视频转换器样式表 */
+
+:root {
+    --primary-color: #007bff;
+    --secondary-color: #6c757d;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --light-color: #f8f9fa;
+    --dark-color: #343a40;
+}
+
+body {
+    background-color: #f5f5f5;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* 预览区域样式 */
+#preview-container {
+    min-height: 400px;
+    background-color: #222;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+#drag-drop-area {
+    background-color: rgba(255, 255, 255, 0.9);
+    z-index: 10;
+    transition: all 0.3s ease;
+}
+
+#drag-drop-area.drag-active {
+    background-color: rgba(var(--primary-color), 0.1);
+    border-color: var(--primary-color) !important;
+}
+
+#preview-image {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+}
+
+.max-h-100 {
+    max-height: 100%;
+}
+
+/* 进度条样式 */
+.progress {
+    border-radius: 0.2rem;
+    background-color: #e9ecef;
+}
+
+.progress-bar {
+    background-color: var(--primary-color);
+    transition: width 0.5s ease;
+}
+
+/* 卡片样式 */
+.card {
+    border: none;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.card-header {
+    border-bottom: none;
+    padding: 0.75rem 1.25rem;
+}
+
+/* 设置滑块样式 */
+.form-range::-webkit-slider-thumb {
+    background: var(--primary-color);
+}
+
+.form-range::-moz-range-thumb {
+    background: var(--primary-color);
+}
+
+.form-range::-ms-thumb {
+    background: var(--primary-color);
+}
+
+/* 按钮状态样式 */
+.btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* 动画效果 */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.pulse {
+    animation: pulse 2s infinite;
+}
+
+/* 文件信息卡片 */
+#file-info .alert {
+    border-radius: 6px;
+    border-left: 4px solid var(--primary-color);
+}
+
+/* 硬件信息区域 */
+#hardware-info {
+    border-radius: 8px;
+}
+
+.hardware-available {
+    color: var(--success-color);
+}
+
+.hardware-unavailable {
+    color: var(--secondary-color);
+}
+
+/* 响应式调整 */
+@media (max-width: 992px) {
+    #preview-container {
+        min-height: 300px;
+    }
+}
+
+@media (max-width: 768px) {
+    .card-header h5 {
+        font-size: 1rem;
+    }
+}
+
+/* 通用辅助类 */
+.shadow-hover {
+    transition: box-shadow 0.3s ease;
+}
+
+.shadow-hover:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+/* 拖放区域过渡效果 */
+.fade-out {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+}
+
+/* 暗色模式支持 */
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #212529;
+        color: #f8f9fa;
+    }
+    
+    .card {
+        background-color: #343a40;
+        color: #f8f9fa;
+    }
+    
+    .text-muted {
+        color: #adb5bd !important;
+    }
+    
+    .form-control, .form-select {
+        background-color: #495057;
+        color: #f8f9fa;
+        border-color: #6c757d;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        background-color: #495057;
+        color: #f8f9fa;
+    }
+    
+    #drag-drop-area {
+        background-color: rgba(52, 58, 64, 0.9);
+        color: #f8f9fa;
+    }
+    
+    #preview-container {
+        background-color: #111;
+    }
+}
