@@ -1,0 +1,125 @@
+<<<<<<< HEAD
+2025-03-09 19:55:46,471 - __main__ - INFO - System: win32
+2025-03-09 19:55:46,471 - __main__ - INFO - Python: 3.12.9 (tags/v3.12.9:fdb8142, Feb  4 2025, 15:27:58) [MSC v.1942 64 bit (AMD64)]
+2025-03-09 19:55:46,471 - __main__ - INFO - Log file: C:\Users\92355\Desktop\Video_data_network_disk\logs\app_20250309_195546.log
+2025-03-09 19:55:46,471 - __main__ - INFO - ÎÄ¼þµ½ÊÓÆµ×ª»»ÏµÍ³Æô¶¯
+2025-03-09 19:55:46,645 - __main__ - INFO - FFmpeg ÒÑ°²×°
+2025-03-09 19:55:46,725 - __main__ - INFO - ¼ì²âµ½ NVIDIA NVENC Ó²¼þ¼ÓËÙ
+2025-03-09 19:55:46,725 - __main__ - INFO - ¼ì²âµ½ Intel QuickSync Ó²¼þ¼ÓËÙ
+2025-03-09 19:55:46,726 - __main__ - INFO - Æô¶¯Web·þÎñÆ÷: http://127.0.0.1:8080
+2025-03-09 19:55:46,726 - web_ui.server - INFO - Æô¶¯Web·þÎñÆ÷: 127.0.0.1:8080
+2025-03-09 19:55:46,743 - werkzeug - WARNING - WebSocket transport not available. Install simple-websocket for improved performance.
+2025-03-09 19:55:46,754 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+2025-03-09 19:55:46,755 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-09 19:55:52,727 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:55:52] "GET / HTTP/1.1" 200 -
+2025-03-09 19:55:52,969 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:55:52] "GET /static/css/css.css HTTP/1.1" 200 -
+2025-03-09 19:55:52,969 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:55:52] "GET /static/js/js.js HTTP/1.1" 200 -
+2025-03-09 19:55:53,251 - engineio.server - ERROR - The WebSocket transport is not available, you must install a WebSocket server that is compatible with your async mode to enable it. See the documentation for details. (further occurrences of this error will be logged with level INFO)
+2025-03-09 19:55:53,252 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:55:53] "GET /socket.io/?EIO=4&transport=polling&t=PLw7YwM HTTP/1.1" 200 -
+2025-03-09 19:55:53,420 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:55:53] "GET /api/hardware-info HTTP/1.1" 200 -
+2025-03-09 19:55:53,499 - web_ui.server - INFO - ¿Í»§¶ËÒÑÁ¬½Ó: l5pCAiCQeIHi0-sYAAAB
+2025-03-09 19:55:53,499 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:55:53] "POST /socket.io/?EIO=4&transport=polling&t=PLw7Yxe&sid=o9w3CusLd7SAAoygAAAA HTTP/1.1" 200 -
+2025-03-09 19:55:53,499 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:55:53] "GET /socket.io/?EIO=4&transport=polling&t=PLw7Yxf&sid=o9w3CusLd7SAAoygAAAA HTTP/1.1" 200 -
+2025-03-09 19:55:53,704 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:55:53] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-03-09 19:56:05,438 - converter.utils - INFO - ÎÄ¼þÒÑ»º´æ: tmphcdi8hii, ID: 43228fa0866b521cde226a5f4c277868
+2025-03-09 19:56:05,439 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:56:05] "POST /api/upload HTTP/1.1" 200 -
+2025-03-09 19:56:10,183 - web_ui.server - INFO - ´´½¨×ª»»ÈÎÎñ: tmphcdi8hii, 4K, 30fps, 9ºÏ1=True, Ô¤¼Æ1Ö¡
+2025-03-09 19:56:10,183 - web_ui.server - INFO - ×ª»»ÈÎÎñÒÑÆô¶¯: tmphcdi8hii
+2025-03-09 19:56:10,184 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:56:10] "POST /api/start-conversion HTTP/1.1" 200 -
+2025-03-09 19:56:11,796 - converter.frame_generator - INFO - Ö¡Éú³ÉÆ÷³õÊ¼»¯: 4K, 30fps, 16É«, 9ºÏ1=True, Ã¿Ö¡ÈÝÁ¿=460800×Ö½Ú
+2025-03-09 19:56:11,875 - converter.encoder - INFO - ÊÓÆµ±àÂëÆ÷³õÊ¼»¯Íê³É: 3840x2160, 30fps, Ó²¼þ¼ÓËÙ: NVENC=True, QSV=True
+2025-03-09 19:56:11,884 - converter.encoder - INFO - ÊÓÆµ±àÂëÆ÷ÒÑÆô¶¯£¬Êä³ö: C:\Users\92355\Desktop\Video_data_network_disk\output\tmphcdi8hii.mp4
+2025-03-09 19:56:15,029 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:56:15] "GET /socket.io/?EIO=4&transport=polling&t=PLw7Y_d&sid=o9w3CusLd7SAAoygAAAA HTTP/1.1" 200 -
+2025-03-09 19:56:15,076 - web_ui.server - INFO - ËùÓÐÖ¡ÒÑ´¦Àí£¬µÈ´ý±àÂëÍê³É...
+2025-03-09 19:56:15,076 - converter.encoder - INFO - Í£Ö¹Á÷Ê½±àÂëÆ÷...
+2025-03-09 19:56:15,076 - converter.encoder - INFO - ´¦ÀíÊ£Óà 0 ¸ö´ý´¦ÀíÖ¡...
+2025-03-09 19:56:15,076 - converter.encoder - WARNING - ±àÂëÆ÷Î´ÔËÐÐ
+2025-03-09 19:56:15,076 - converter.encoder - INFO - ÔªÊý¾ÝÒÑÐ´Èë: C:\Users\92355\Desktop\Video_data_network_disk\output\tmphcdi8hii_metadata.json
+2025-03-09 19:56:15,076 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:56:15] "GET /socket.io/?EIO=4&transport=polling&t=PLw7eEt&sid=o9w3CusLd7SAAoygAAAA HTTP/1.1" 200 -
+2025-03-09 19:56:18,252 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:56:18] "GET /socket.io/?EIO=4&transport=polling&t=PLw7eFk&sid=o9w3CusLd7SAAoygAAAA HTTP/1.1" 200 -
+2025-03-09 19:56:18,256 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:56:18] "POST /socket.io/?EIO=4&transport=polling&t=PLw7f1F&sid=o9w3CusLd7SAAoygAAAA HTTP/1.1" 200 -
+2025-03-09 19:56:18,592 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:56:18] "GET /api/download/C:/Users/92355/Desktop/Video_data_network_disk/output/tmphcdi8hii.mp4 HTTP/1.1" 200 -
+2025-03-09 19:56:18,604 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:56:18] "[35m[1mGET /api/download/C:/Users/92355/Desktop/Video_data_network_disk/output/tmphcdi8hii.mp4 HTTP/1.1[0m" 206 -
+2025-03-09 19:56:18,612 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:56:18] "[35m[1mGET /api/download/C:/Users/92355/Desktop/Video_data_network_disk/output/tmphcdi8hii.mp4 HTTP/1.1[0m" 206 -
+2025-03-09 19:56:18,618 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:56:18] "[35m[1mGET /api/download/C:/Users/92355/Desktop/Video_data_network_disk/output/tmphcdi8hii.mp4 HTTP/1.1[0m" 206 -
+2025-03-09 19:56:18,620 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:56:18] "[35m[1mGET /api/download/C:/Users/92355/Desktop/Video_data_network_disk/output/tmphcdi8hii.mp4 HTTP/1.1[0m" 206 -
+2025-03-09 19:56:43,259 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:56:43] "GET /socket.io/?EIO=4&transport=polling&t=PLw7f1G&sid=o9w3CusLd7SAAoygAAAA HTTP/1.1" 200 -
+2025-03-09 19:56:43,267 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:56:43] "POST /socket.io/?EIO=4&transport=polling&t=PLw7l81&sid=o9w3CusLd7SAAoygAAAA HTTP/1.1" 200 -
+2025-03-09 19:57:08,268 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:57:08] "GET /socket.io/?EIO=4&transport=polling&t=PLw7l81.0&sid=o9w3CusLd7SAAoygAAAA HTTP/1.1" 200 -
+2025-03-09 19:57:08,272 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:57:08] "POST /socket.io/?EIO=4&transport=polling&t=PLw7rEk&sid=o9w3CusLd7SAAoygAAAA HTTP/1.1" 200 -
+2025-03-09 19:57:21,102 - converter.utils - INFO - ÎÄ¼þÒÑ»º´æ: tmp3g142f2c, ID: d230efab4040e21a28571d87e407fe28
+2025-03-09 19:57:21,162 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:57:21] "POST /api/upload HTTP/1.1" 200 -
+2025-03-09 19:57:27,049 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:57:27] "[31m[1mPOST /api/start-conversion HTTP/1.1[0m" 400 -
+2025-03-09 19:57:33,273 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:57:33] "GET /socket.io/?EIO=4&transport=polling&t=PLw7rEk.0&sid=o9w3CusLd7SAAoygAAAA HTTP/1.1" 200 -
+2025-03-09 19:57:33,273 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:57:33] "POST /socket.io/?EIO=4&transport=polling&t=PLw7xLR&sid=o9w3CusLd7SAAoygAAAA HTTP/1.1" 200 -
+2025-03-09 19:57:58,279 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:57:58] "GET /socket.io/?EIO=4&transport=polling&t=PLw7xLR.0&sid=o9w3CusLd7SAAoygAAAA HTTP/1.1" 200 -
+2025-03-09 19:57:58,285 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:57:58] "POST /socket.io/?EIO=4&transport=polling&t=PLw81SA&sid=o9w3CusLd7SAAoygAAAA HTTP/1.1" 200 -
+2025-03-09 19:58:23,286 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:58:23] "GET /socket.io/?EIO=4&transport=polling&t=PLw81SB&sid=o9w3CusLd7SAAoygAAAA HTTP/1.1" 200 -
+2025-03-09 19:58:23,290 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:58:23] "POST /socket.io/?EIO=4&transport=polling&t=PLw87Yu&sid=o9w3CusLd7SAAoygAAAA HTTP/1.1" 200 -
+2025-03-09 19:58:48,291 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:58:48] "GET /socket.io/?EIO=4&transport=polling&t=PLw87Yu.0&sid=o9w3CusLd7SAAoygAAAA HTTP/1.1" 200 -
+2025-03-09 19:58:48,295 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:58:48] "POST /socket.io/?EIO=4&transport=polling&t=PLw8Dfc&sid=o9w3CusLd7SAAoygAAAA HTTP/1.1" 200 -
+2025-03-09 19:59:09,923 - __main__ - INFO - ÎÄ¼þµ½ÊÓÆµ×ª»»ÏµÍ³ÒÑ¹Ø±Õ
+=======
+2025-03-09 19:55:46,471 - __main__ - INFO - System: win32
+2025-03-09 19:55:46,471 - __main__ - INFO - Python: 3.12.9 (tags/v3.12.9:fdb8142, Feb  4 2025, 15:27:58) [MSC v.1942 64 bit (AMD64)]
+2025-03-09 19:55:46,471 - __main__ - INFO - Log file: C:\Users\92355\Desktop\Video_data_network_disk\logs\app_20250309_195546.log
+2025-03-09 19:55:46,471 - __main__ - INFO - ÎÄ¼þµ½ÊÓÆµ×ª»»ÏµÍ³Æô¶¯
+2025-03-09 19:55:46,645 - __main__ - INFO - FFmpeg ÒÑ°²×°
+2025-03-09 19:55:46,725 - __main__ - INFO - ¼ì²âµ½ NVIDIA NVENC Ó²¼þ¼ÓËÙ
+2025-03-09 19:55:46,725 - __main__ - INFO - ¼ì²âµ½ Intel QuickSync Ó²¼þ¼ÓËÙ
+2025-03-09 19:55:46,726 - __main__ - INFO - Æô¶¯Web·þÎñÆ÷: http://127.0.0.1:8080
+2025-03-09 19:55:46,726 - web_ui.server - INFO - Æô¶¯Web·þÎñÆ÷: 127.0.0.1:8080
+2025-03-09 19:55:46,743 - werkzeug - WARNING - WebSocket transport not available. Install simple-websocket for improved performance.
+2025-03-09 19:55:46,754 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+2025-03-09 19:55:46,755 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-09 19:55:52,727 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:55:52] "GET / HTTP/1.1" 200 -
+2025-03-09 19:55:52,969 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:55:52] "GET /static/css/css.css HTTP/1.1" 200 -
+2025-03-09 19:55:52,969 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:55:52] "GET /static/js/js.js HTTP/1.1" 200 -
+2025-03-09 19:55:53,251 - engineio.server - ERROR - The WebSocket transport is not available, you must install a WebSocket server that is compatible with your async mode to enable it. See the documentation for details. (further occurrences of this error will be logged with level INFO)
+2025-03-09 19:55:53,252 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:55:53] "GET /socket.io/?EIO=4&transport=polling&t=PLw7YwM HTTP/1.1" 200 -
+2025-03-09 19:55:53,420 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:55:53] "GET /api/hardware-info HTTP/1.1" 200 -
+2025-03-09 19:55:53,499 - web_ui.server - INFO - ¿Í»§¶ËÒÑÁ¬½Ó: l5pCAiCQeIHi0-sYAAAB
+2025-03-09 19:55:53,499 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:55:53] "POST /socket.io/?EIO=4&transport=polling&t=PLw7Yxe&sid=o9w3CusLd7SAAoygAAAA HTTP/1.1" 200 -
+2025-03-09 19:55:53,499 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:55:53] "GET /socket.io/?EIO=4&transport=polling&t=PLw7Yxf&sid=o9w3CusLd7SAAoygAAAA HTTP/1.1" 200 -
+2025-03-09 19:55:53,704 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:55:53] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-03-09 19:56:05,438 - converter.utils - INFO - ÎÄ¼þÒÑ»º´æ: tmphcdi8hii, ID: 43228fa0866b521cde226a5f4c277868
+2025-03-09 19:56:05,439 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:56:05] "POST /api/upload HTTP/1.1" 200 -
+2025-03-09 19:56:10,183 - web_ui.server - INFO - ´´½¨×ª»»ÈÎÎñ: tmphcdi8hii, 4K, 30fps, 9ºÏ1=True, Ô¤¼Æ1Ö¡
+2025-03-09 19:56:10,183 - web_ui.server - INFO - ×ª»»ÈÎÎñÒÑÆô¶¯: tmphcdi8hii
+2025-03-09 19:56:10,184 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:56:10] "POST /api/start-conversion HTTP/1.1" 200 -
+2025-03-09 19:56:11,796 - converter.frame_generator - INFO - Ö¡Éú³ÉÆ÷³õÊ¼»¯: 4K, 30fps, 16É«, 9ºÏ1=True, Ã¿Ö¡ÈÝÁ¿=460800×Ö½Ú
+2025-03-09 19:56:11,875 - converter.encoder - INFO - ÊÓÆµ±àÂëÆ÷³õÊ¼»¯Íê³É: 3840x2160, 30fps, Ó²¼þ¼ÓËÙ: NVENC=True, QSV=True
+2025-03-09 19:56:11,884 - converter.encoder - INFO - ÊÓÆµ±àÂëÆ÷ÒÑÆô¶¯£¬Êä³ö: C:\Users\92355\Desktop\Video_data_network_disk\output\tmphcdi8hii.mp4
+2025-03-09 19:56:15,029 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:56:15] "GET /socket.io/?EIO=4&transport=polling&t=PLw7Y_d&sid=o9w3CusLd7SAAoygAAAA HTTP/1.1" 200 -
+2025-03-09 19:56:15,076 - web_ui.server - INFO - ËùÓÐÖ¡ÒÑ´¦Àí£¬µÈ´ý±àÂëÍê³É...
+2025-03-09 19:56:15,076 - converter.encoder - INFO - Í£Ö¹Á÷Ê½±àÂëÆ÷...
+2025-03-09 19:56:15,076 - converter.encoder - INFO - ´¦ÀíÊ£Óà 0 ¸ö´ý´¦ÀíÖ¡...
+2025-03-09 19:56:15,076 - converter.encoder - WARNING - ±àÂëÆ÷Î´ÔËÐÐ
+2025-03-09 19:56:15,076 - converter.encoder - INFO - ÔªÊý¾ÝÒÑÐ´Èë: C:\Users\92355\Desktop\Video_data_network_disk\output\tmphcdi8hii_metadata.json
+2025-03-09 19:56:15,076 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:56:15] "GET /socket.io/?EIO=4&transport=polling&t=PLw7eEt&sid=o9w3CusLd7SAAoygAAAA HTTP/1.1" 200 -
+2025-03-09 19:56:18,252 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:56:18] "GET /socket.io/?EIO=4&transport=polling&t=PLw7eFk&sid=o9w3CusLd7SAAoygAAAA HTTP/1.1" 200 -
+2025-03-09 19:56:18,256 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:56:18] "POST /socket.io/?EIO=4&transport=polling&t=PLw7f1F&sid=o9w3CusLd7SAAoygAAAA HTTP/1.1" 200 -
+2025-03-09 19:56:18,592 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:56:18] "GET /api/download/C:/Users/92355/Desktop/Video_data_network_disk/output/tmphcdi8hii.mp4 HTTP/1.1" 200 -
+2025-03-09 19:56:18,604 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:56:18] "[35m[1mGET /api/download/C:/Users/92355/Desktop/Video_data_network_disk/output/tmphcdi8hii.mp4 HTTP/1.1[0m" 206 -
+2025-03-09 19:56:18,612 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:56:18] "[35m[1mGET /api/download/C:/Users/92355/Desktop/Video_data_network_disk/output/tmphcdi8hii.mp4 HTTP/1.1[0m" 206 -
+2025-03-09 19:56:18,618 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:56:18] "[35m[1mGET /api/download/C:/Users/92355/Desktop/Video_data_network_disk/output/tmphcdi8hii.mp4 HTTP/1.1[0m" 206 -
+2025-03-09 19:56:18,620 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:56:18] "[35m[1mGET /api/download/C:/Users/92355/Desktop/Video_data_network_disk/output/tmphcdi8hii.mp4 HTTP/1.1[0m" 206 -
+2025-03-09 19:56:43,259 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:56:43] "GET /socket.io/?EIO=4&transport=polling&t=PLw7f1G&sid=o9w3CusLd7SAAoygAAAA HTTP/1.1" 200 -
+2025-03-09 19:56:43,267 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:56:43] "POST /socket.io/?EIO=4&transport=polling&t=PLw7l81&sid=o9w3CusLd7SAAoygAAAA HTTP/1.1" 200 -
+2025-03-09 19:57:08,268 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:57:08] "GET /socket.io/?EIO=4&transport=polling&t=PLw7l81.0&sid=o9w3CusLd7SAAoygAAAA HTTP/1.1" 200 -
+2025-03-09 19:57:08,272 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:57:08] "POST /socket.io/?EIO=4&transport=polling&t=PLw7rEk&sid=o9w3CusLd7SAAoygAAAA HTTP/1.1" 200 -
+2025-03-09 19:57:21,102 - converter.utils - INFO - ÎÄ¼þÒÑ»º´æ: tmp3g142f2c, ID: d230efab4040e21a28571d87e407fe28
+2025-03-09 19:57:21,162 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:57:21] "POST /api/upload HTTP/1.1" 200 -
+2025-03-09 19:57:27,049 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:57:27] "[31m[1mPOST /api/start-conversion HTTP/1.1[0m" 400 -
+2025-03-09 19:57:33,273 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:57:33] "GET /socket.io/?EIO=4&transport=polling&t=PLw7rEk.0&sid=o9w3CusLd7SAAoygAAAA HTTP/1.1" 200 -
+2025-03-09 19:57:33,273 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:57:33] "POST /socket.io/?EIO=4&transport=polling&t=PLw7xLR&sid=o9w3CusLd7SAAoygAAAA HTTP/1.1" 200 -
+2025-03-09 19:57:58,279 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:57:58] "GET /socket.io/?EIO=4&transport=polling&t=PLw7xLR.0&sid=o9w3CusLd7SAAoygAAAA HTTP/1.1" 200 -
+2025-03-09 19:57:58,285 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:57:58] "POST /socket.io/?EIO=4&transport=polling&t=PLw81SA&sid=o9w3CusLd7SAAoygAAAA HTTP/1.1" 200 -
+2025-03-09 19:58:23,286 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:58:23] "GET /socket.io/?EIO=4&transport=polling&t=PLw81SB&sid=o9w3CusLd7SAAoygAAAA HTTP/1.1" 200 -
+2025-03-09 19:58:23,290 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:58:23] "POST /socket.io/?EIO=4&transport=polling&t=PLw87Yu&sid=o9w3CusLd7SAAoygAAAA HTTP/1.1" 200 -
+2025-03-09 19:58:48,291 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:58:48] "GET /socket.io/?EIO=4&transport=polling&t=PLw87Yu.0&sid=o9w3CusLd7SAAoygAAAA HTTP/1.1" 200 -
+2025-03-09 19:58:48,295 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 19:58:48] "POST /socket.io/?EIO=4&transport=polling&t=PLw8Dfc&sid=o9w3CusLd7SAAoygAAAA HTTP/1.1" 200 -
+2025-03-09 19:59:09,923 - __main__ - INFO - ÎÄ¼þµ½ÊÓÆµ×ª»»ÏµÍ³ÒÑ¹Ø±Õ
+>>>>>>> 21916ba (Initial commit)

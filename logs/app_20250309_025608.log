@@ -1,0 +1,459 @@
+<<<<<<< HEAD
+2025-03-09 02:56:08,806 - __main__ - INFO - System: win32
+2025-03-09 02:56:08,806 - __main__ - INFO - Python: 3.12.9 (tags/v3.12.9:fdb8142, Feb  4 2025, 15:27:58) [MSC v.1942 64 bit (AMD64)]
+2025-03-09 02:56:08,806 - __main__ - INFO - Log file: C:\Users\92355\Desktop\Video_data_network_disk\logs\app_20250309_025608.log
+2025-03-09 02:56:08,806 - __main__ - INFO - ÎÄ¼þµ½ÊÓÆµ×ª»»ÏµÍ³Æô¶¯
+2025-03-09 02:56:08,867 - __main__ - INFO - FFmpeg ÒÑ°²×°
+2025-03-09 02:56:08,933 - __main__ - INFO - ¼ì²âµ½ NVIDIA NVENC Ó²¼þ¼ÓËÙ
+2025-03-09 02:56:08,933 - __main__ - INFO - ¼ì²âµ½ Intel QuickSync Ó²¼þ¼ÓËÙ
+2025-03-09 02:56:08,934 - __main__ - INFO - Æô¶¯Web·þÎñÆ÷: http://127.0.0.1:8080
+2025-03-09 02:56:08,935 - web_ui.server - INFO - Æô¶¯Web·þÎñÆ÷: 127.0.0.1:8080
+2025-03-09 02:56:08,947 - werkzeug - WARNING - WebSocket transport not available. Install simple-websocket for improved performance.
+2025-03-09 02:56:08,964 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+2025-03-09 02:56:08,964 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-09 02:56:12,103 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:56:12] "GET / HTTP/1.1" 200 -
+2025-03-09 02:56:12,301 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:56:12] "[36mGET /static/css/css.css HTTP/1.1[0m" 304 -
+2025-03-09 02:56:12,304 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:56:12] "[36mGET /static/js/js.js HTTP/1.1[0m" 304 -
+2025-03-09 02:56:12,796 - engineio.server - ERROR - The WebSocket transport is not available, you must install a WebSocket server that is compatible with your async mode to enable it. See the documentation for details. (further occurrences of this error will be logged with level INFO)
+2025-03-09 02:56:12,796 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:56:12] "GET /socket.io/?EIO=4&transport=polling&t=PLsUAH_ HTTP/1.1" 200 -
+2025-03-09 02:56:12,886 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:56:12] "GET /api/hardware-info HTTP/1.1" 200 -
+2025-03-09 02:56:12,954 - web_ui.server - INFO - ¿Í»§¶ËÒÑÁ¬½Ó: 8WivhIa7juVVjuh7AAAB
+2025-03-09 02:56:12,954 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:56:12] "POST /socket.io/?EIO=4&transport=polling&t=PLsUAKC&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 02:56:12,956 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:56:12] "GET /socket.io/?EIO=4&transport=polling&t=PLsUAKD&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 02:56:17,398 - converter.utils - INFO - ÎÄ¼þÒÑ»º´æ: tmp7iyy_58d
+2025-03-09 02:56:17,424 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:56:17] "POST /api/upload HTTP/1.1" 200 -
+2025-03-09 02:56:21,131 - web_ui.server - INFO - ´´½¨×ª»»ÈÎÎñ: tmpfztozjr3, 4K, 30fps, 9ºÏ1=True, Ô¤¼Æ333Ö¡
+2025-03-09 02:56:21,131 - web_ui.server - INFO - ×ª»»ÈÎÎñÒÑÆô¶¯: tmpfztozjr3
+2025-03-09 02:56:21,131 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:56:21] "POST /api/start-conversion HTTP/1.1" 200 -
+2025-03-09 02:56:22,940 - converter.frame_generator - INFO - Ö¡Éú³ÉÆ÷³õÊ¼»¯: 4K, 30fps, 16É«, 9ºÏ1=True, Ã¿Ö¡ÈÝÁ¿=460800×Ö½Ú
+2025-03-09 02:56:23,015 - converter.encoder - INFO - ÊÓÆµ±àÂëÆ÷³õÊ¼»¯Íê³É: 3840x2160, 30fps, Ó²¼þ¼ÓËÙ: NVENC=True, QSV=True
+2025-03-09 02:56:23,027 - converter.encoder - INFO - ÊÓÆµ±àÂëÆ÷ÒÑÆô¶¯£¬Êä³ö: C:\Users\92355\Desktop\Video_data_network_disk\output\tmpfztozjr3.mp4
+2025-03-09 02:56:23,028 - web_ui.server - INFO - Ó¦ÓÃ¾À´í±àÂë...
+2025-03-09 02:56:37,986 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:56:37] "GET /socket.io/?EIO=4&transport=polling&t=PLsUAO8&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 02:56:39,394 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:56:39] "POST /socket.io/?EIO=4&transport=polling&t=PLsUGXQ&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 02:56:53,568 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:56:53] "[36mGET /static/css/css.css HTTP/1.1[0m" 304 -
+2025-03-09 02:57:04,441 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:57:04] "GET /socket.io/?EIO=4&transport=polling&t=PLsUGXQ.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 02:57:05,896 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:57:05] "POST /socket.io/?EIO=4&transport=polling&t=PLsUN2p&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 02:57:30,966 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:57:30] "GET /socket.io/?EIO=4&transport=polling&t=PLsUN2q&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 02:57:31,974 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:57:31] "POST /socket.io/?EIO=4&transport=polling&t=PLsUTSy&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 02:57:56,986 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:57:56] "GET /socket.io/?EIO=4&transport=polling&t=PLsUTSz&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 02:57:59,007 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:57:59] "POST /socket.io/?EIO=4&transport=polling&t=PLsUa5t&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 02:58:24,031 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:58:24] "GET /socket.io/?EIO=4&transport=polling&t=PLsUa5u&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 02:58:24,371 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:58:24] "POST /socket.io/?EIO=4&transport=polling&t=PLsUgMR&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 02:58:49,805 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:58:49] "GET /socket.io/?EIO=4&transport=polling&t=PLsUgMS&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 02:58:51,708 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:58:51] "POST /socket.io/?EIO=4&transport=polling&t=PLsUmyC&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 02:58:58,034 - web_ui.server - INFO - Í£Ö¹×ª»»ÈÎÎñ...
+2025-03-09 02:59:02,293 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:59:02] "POST /api/stop-conversion HTTP/1.1" 200 -
+2025-03-09 02:59:02,566 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:59:02] "[31m[1mPOST /api/stop-conversion HTTP/1.1[0m" 400 -
+2025-03-09 02:59:02,735 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:59:02] "[31m[1mPOST /api/stop-conversion HTTP/1.1[0m" 400 -
+2025-03-09 02:59:03,755 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:59:03] "[31m[1mPOST /api/stop-conversion HTTP/1.1[0m" 400 -
+2025-03-09 02:59:04,166 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:59:04] "[31m[1mPOST /api/stop-conversion HTTP/1.1[0m" 400 -
+2025-03-09 02:59:05,349 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:59:05] "[31m[1mPOST /api/stop-conversion HTTP/1.1[0m" 400 -
+2025-03-09 02:59:05,892 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:59:05] "[31m[1mPOST /api/stop-conversion HTTP/1.1[0m" 400 -
+2025-03-09 02:59:08,781 - converter.encoder - INFO - Í£Ö¹Á÷Ê½±àÂëÆ÷...
+2025-03-09 02:59:09,002 - converter.encoder - INFO - ´¦ÀíÊ£Óà 0 ¸ö´ý´¦ÀíÖ¡...
+2025-03-09 02:59:09,145 - converter.encoder - WARNING - ±àÂëÆ÷Î´ÔËÐÐ
+2025-03-09 02:59:09,604 - converter.encoder - INFO - ÔªÊý¾ÝÒÑÐ´Èë: C:\Users\92355\Desktop\Video_data_network_disk\output\tmpfztozjr3_metadata.json
+2025-03-09 02:59:09,798 - web_ui.server - INFO - ×ª»»ÈÎÎñÒÑÍ£Ö¹
+2025-03-09 02:59:10,397 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:59:10] "POST /api/stop-conversion HTTP/1.1" 200 -
+2025-03-09 02:59:16,217 - web_ui.server - INFO - ´´½¨×ª»»ÈÎÎñ: tmpfztozjr3, 4K, 30fps, 9ºÏ1=True, Ô¤¼Æ333Ö¡
+2025-03-09 02:59:16,793 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:59:16] "GET /socket.io/?EIO=4&transport=polling&t=PLsUmyD&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 02:59:16,926 - converter.frame_generator - INFO - Ö¡Éú³ÉÆ÷³õÊ¼»¯: 4K, 30fps, 16É«, 9ºÏ1=True, Ã¿Ö¡ÈÝÁ¿=460800×Ö½Ú
+2025-03-09 02:59:16,931 - web_ui.server - INFO - ×ª»»ÈÎÎñÒÑÆô¶¯: tmpfztozjr3
+2025-03-09 02:59:17,637 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:59:17] "POST /api/start-conversion HTTP/1.1" 200 -
+2025-03-09 02:59:19,137 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:59:19] "POST /socket.io/?EIO=4&transport=polling&t=PLsUtGf&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 02:59:27,047 - converter.encoder - INFO - ÊÓÆµ±àÂëÆ÷³õÊ¼»¯Íê³É: 3840x2160, 30fps, Ó²¼þ¼ÓËÙ: NVENC=True, QSV=True
+2025-03-09 02:59:28,098 - converter.encoder - INFO - ÊÓÆµ±àÂëÆ÷ÒÑÆô¶¯£¬Êä³ö: C:\Users\92355\Desktop\Video_data_network_disk\output\tmpfztozjr3.mp4
+2025-03-09 02:59:44,100 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:59:44] "GET /socket.io/?EIO=4&transport=polling&t=PLsUtGf.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 02:59:45,548 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:59:45] "POST /socket.io/?EIO=4&transport=polling&t=PLsU-8J&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:00:10,641 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:00:10] "GET /socket.io/?EIO=4&transport=polling&t=PLsU-8J.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:00:11,583 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:00:11] "POST /socket.io/?EIO=4&transport=polling&t=PLsV4W9&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:00:36,669 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:00:36] "GET /socket.io/?EIO=4&transport=polling&t=PLsV4W9.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:00:37,221 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:00:37] "POST /socket.io/?EIO=4&transport=polling&t=PLsVAlu&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:01:02,769 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:01:02] "GET /socket.io/?EIO=4&transport=polling&t=PLsVAlu.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:01:03,880 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:01:03] "POST /socket.io/?EIO=4&transport=polling&t=PLsVHD7&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:01:29,040 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:01:29] "GET /socket.io/?EIO=4&transport=polling&t=PLsVHD7.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:01:30,645 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:01:30] "POST /socket.io/?EIO=4&transport=polling&t=PLsVNgB&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:01:55,881 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:01:55] "GET /socket.io/?EIO=4&transport=polling&t=PLsVNgB.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:01:56,161 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:01:56] "POST /socket.io/?EIO=4&transport=polling&t=PLsVU2-&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:02:21,131 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:02:21] "GET /socket.io/?EIO=4&transport=polling&t=PLsVU2-.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:02:21,136 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:02:21] "POST /socket.io/?EIO=4&transport=polling&t=PLsVaDF&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:02:22,975 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:02:22] "GET /socket.io/?EIO=4&transport=polling&t=PLsVaDF.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:02:22,984 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:02:22] "GET /socket.io/?EIO=4&transport=polling&t=PLsVag2&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:02:23,830 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:02:23] "GET /socket.io/?EIO=4&transport=polling&t=PLsVage&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:02:24,805 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:02:24] "GET /socket.io/?EIO=4&transport=polling&t=PLsVatQ&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:02:25,757 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:02:25] "GET /socket.io/?EIO=4&transport=polling&t=PLsVb6e&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:02:26,739 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:02:26] "GET /socket.io/?EIO=4&transport=polling&t=PLsVbLW&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:02:27,794 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:02:27] "GET /socket.io/?EIO=4&transport=polling&t=PLsVbat&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:02:28,827 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:02:28] "GET /socket.io/?EIO=4&transport=polling&t=PLsVbrN&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:02:29,827 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:02:29] "GET /socket.io/?EIO=4&transport=polling&t=PLsVc5U&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:02:30,849 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:02:30] "GET /socket.io/?EIO=4&transport=polling&t=PLsVcL6&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:02:31,913 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:02:31] "GET /socket.io/?EIO=4&transport=polling&t=PLsVcb4&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:02:32,980 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:02:32] "GET /socket.io/?EIO=4&transport=polling&t=PLsVcri&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:02:33,989 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:02:33] "GET /socket.io/?EIO=4&transport=polling&t=PLsVd6O&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:02:35,030 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:02:35] "GET /socket.io/?EIO=4&transport=polling&t=PLsVdM8&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:02:36,043 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:02:36] "GET /socket.io/?EIO=4&transport=polling&t=PLsVdcP&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:02:36,191 - web_ui.server - INFO - ËùÓÐÖ¡ÒÑ´¦Àí£¬µÈ´ý±àÂëÍê³É...
+2025-03-09 03:02:36,191 - converter.encoder - INFO - Í£Ö¹Á÷Ê½±àÂëÆ÷...
+2025-03-09 03:02:36,191 - converter.encoder - INFO - ´¦ÀíÊ£Óà 0 ¸ö´ý´¦ÀíÖ¡...
+2025-03-09 03:02:36,191 - converter.encoder - WARNING - ±àÂëÆ÷Î´ÔËÐÐ
+2025-03-09 03:02:36,194 - converter.encoder - INFO - ÔªÊý¾ÝÒÑÐ´Èë: C:\Users\92355\Desktop\Video_data_network_disk\output\tmpfztozjr3_metadata.json
+2025-03-09 03:02:36,199 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:02:36] "GET /socket.io/?EIO=4&transport=polling&t=PLsVdsE&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:02:46,138 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:02:46] "GET /socket.io/?EIO=4&transport=polling&t=PLsVduh&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:02:46,140 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:02:46] "POST /socket.io/?EIO=4&transport=polling&t=PLsVgJy&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:03:11,143 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:03:11] "GET /socket.io/?EIO=4&transport=polling&t=PLsVgJy.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:03:11,148 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:03:11] "POST /socket.io/?EIO=4&transport=polling&t=PLsVmQg&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:03:36,150 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:03:36] "GET /socket.io/?EIO=4&transport=polling&t=PLsVmQg.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:03:36,155 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:03:36] "POST /socket.io/?EIO=4&transport=polling&t=PLsVsXO&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:03:39,456 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:03:39] "GET /api/download/C:/Users/92355/Desktop/Video_data_network_disk/output/tmpfztozjr3.mp4 HTTP/1.1" 200 -
+2025-03-09 03:03:39,477 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:03:39] "[35m[1mGET /api/download/C:/Users/92355/Desktop/Video_data_network_disk/output/tmpfztozjr3.mp4 HTTP/1.1[0m" 206 -
+2025-03-09 03:04:01,160 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:04:01] "GET /socket.io/?EIO=4&transport=polling&t=PLsVsXO.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:04:01,167 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:04:01] "POST /socket.io/?EIO=4&transport=polling&t=PLsVyeB&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:04:26,167 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:04:26] "GET /socket.io/?EIO=4&transport=polling&t=PLsVyeC&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:04:26,171 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:04:26] "POST /socket.io/?EIO=4&transport=polling&t=PLsW2kv&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:04:51,174 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:04:51] "GET /socket.io/?EIO=4&transport=polling&t=PLsW2kv.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:04:51,179 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:04:51] "POST /socket.io/?EIO=4&transport=polling&t=PLsW8re&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:05:16,181 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:05:16] "GET /socket.io/?EIO=4&transport=polling&t=PLsW8re.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:05:16,181 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:05:16] "POST /socket.io/?EIO=4&transport=polling&t=PLsWEyN&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:05:41,187 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:05:41] "GET /socket.io/?EIO=4&transport=polling&t=PLsWEyO&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:05:41,191 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:05:41] "POST /socket.io/?EIO=4&transport=polling&t=PLsWL36&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:06:06,194 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:06:06] "GET /socket.io/?EIO=4&transport=polling&t=PLsWL36.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:06:06,199 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:06:06] "POST /socket.io/?EIO=4&transport=polling&t=PLsWR9q&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:06:31,201 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:06:31] "GET /socket.io/?EIO=4&transport=polling&t=PLsWR9q.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:06:31,206 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:06:31] "POST /socket.io/?EIO=4&transport=polling&t=PLsWXGa&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:06:56,207 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:06:56] "GET /socket.io/?EIO=4&transport=polling&t=PLsWXGa.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:06:56,212 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:06:56] "POST /socket.io/?EIO=4&transport=polling&t=PLsWdNH&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:07:21,213 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:07:21] "GET /socket.io/?EIO=4&transport=polling&t=PLsWdNI&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:07:21,217 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:07:21] "POST /socket.io/?EIO=4&transport=polling&t=PLsWjT_&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:07:46,220 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:07:46] "GET /socket.io/?EIO=4&transport=polling&t=PLsWjU0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:07:46,225 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:07:46] "POST /socket.io/?EIO=4&transport=polling&t=PLsWpak&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:08:11,226 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:08:11] "GET /socket.io/?EIO=4&transport=polling&t=PLsWpak.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:08:11,230 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:08:11] "POST /socket.io/?EIO=4&transport=polling&t=PLsWvhS&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:08:36,232 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:08:36] "GET /socket.io/?EIO=4&transport=polling&t=PLsWvhT&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:08:36,236 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:08:36] "POST /socket.io/?EIO=4&transport=polling&t=PLsW_oA&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:09:01,237 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:09:01] "GET /socket.io/?EIO=4&transport=polling&t=PLsW_oA.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:09:01,243 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:09:01] "POST /socket.io/?EIO=4&transport=polling&t=PLsX5uu&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:09:26,243 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:09:26] "GET /socket.io/?EIO=4&transport=polling&t=PLsX5uu.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:09:26,247 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:09:26] "POST /socket.io/?EIO=4&transport=polling&t=PLsXB_c&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:09:51,250 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:09:51] "GET /socket.io/?EIO=4&transport=polling&t=PLsXB_c.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:09:51,252 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:09:51] "POST /socket.io/?EIO=4&transport=polling&t=PLsXI6K&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:10:16,254 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:10:16] "GET /socket.io/?EIO=4&transport=polling&t=PLsXI6K.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:10:16,257 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:10:16] "POST /socket.io/?EIO=4&transport=polling&t=PLsXOD1&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:10:41,260 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:10:41] "GET /socket.io/?EIO=4&transport=polling&t=PLsXOD1.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:10:41,267 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:10:41] "POST /socket.io/?EIO=4&transport=polling&t=PLsXUJl&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:11:06,267 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:11:06] "GET /socket.io/?EIO=4&transport=polling&t=PLsXUJl.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:11:06,273 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:11:06] "POST /socket.io/?EIO=4&transport=polling&t=PLsXaQV&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:11:31,275 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:11:31] "GET /socket.io/?EIO=4&transport=polling&t=PLsXaQW&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:11:31,281 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:11:31] "POST /socket.io/?EIO=4&transport=polling&t=PLsXgXD&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:11:56,283 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:11:56] "GET /socket.io/?EIO=4&transport=polling&t=PLsXgXE&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:11:56,286 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:11:56] "POST /socket.io/?EIO=4&transport=polling&t=PLsXmdz&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:12:21,287 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:12:21] "GET /socket.io/?EIO=4&transport=polling&t=PLsXmdz.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:12:21,293 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:12:21] "POST /socket.io/?EIO=4&transport=polling&t=PLsXskg&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:12:46,293 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:12:46] "GET /socket.io/?EIO=4&transport=polling&t=PLsXskg.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:12:46,298 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:12:46] "POST /socket.io/?EIO=4&transport=polling&t=PLsXyrN&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:13:11,299 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:13:11] "GET /socket.io/?EIO=4&transport=polling&t=PLsXyrO&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:13:11,303 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:13:11] "POST /socket.io/?EIO=4&transport=polling&t=PLsY2y6&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:13:36,304 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:13:36] "GET /socket.io/?EIO=4&transport=polling&t=PLsY2y6.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:13:36,311 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:13:36] "POST /socket.io/?EIO=4&transport=polling&t=PLsY92p&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:14:01,311 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:14:01] "GET /socket.io/?EIO=4&transport=polling&t=PLsY92p.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:14:01,317 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:14:01] "POST /socket.io/?EIO=4&transport=polling&t=PLsYF9Y&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:14:26,317 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:14:26] "GET /socket.io/?EIO=4&transport=polling&t=PLsYF9Y.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:14:26,320 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:14:26] "POST /socket.io/?EIO=4&transport=polling&t=PLsYLGG&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:14:51,323 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:14:51] "GET /socket.io/?EIO=4&transport=polling&t=PLsYLGH&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:14:51,328 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:14:51] "POST /socket.io/?EIO=4&transport=polling&t=PLsYRM-&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:15:16,329 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:15:16] "GET /socket.io/?EIO=4&transport=polling&t=PLsYRM-.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:15:16,333 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:15:16] "POST /socket.io/?EIO=4&transport=polling&t=PLsYXTi&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:15:41,335 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:15:41] "GET /socket.io/?EIO=4&transport=polling&t=PLsYXTi.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:15:41,338 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:15:41] "POST /socket.io/?EIO=4&transport=polling&t=PLsYdaP&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:16:06,341 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:16:06] "GET /socket.io/?EIO=4&transport=polling&t=PLsYdaQ&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:16:06,347 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:16:06] "POST /socket.io/?EIO=4&transport=polling&t=PLsYjh7&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:16:31,347 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:16:31] "GET /socket.io/?EIO=4&transport=polling&t=PLsYjh7.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:16:31,351 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:16:31] "POST /socket.io/?EIO=4&transport=polling&t=PLsYpns&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:16:56,353 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:16:56] "GET /socket.io/?EIO=4&transport=polling&t=PLsYpns.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:16:56,357 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:16:56] "POST /socket.io/?EIO=4&transport=polling&t=PLsYvuZ&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:17:21,358 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:17:21] "GET /socket.io/?EIO=4&transport=polling&t=PLsYvuZ.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:17:21,364 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:17:21] "POST /socket.io/?EIO=4&transport=polling&t=PLsY__G&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:17:46,364 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:17:46] "GET /socket.io/?EIO=4&transport=polling&t=PLsY__H&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:17:46,369 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:17:46] "POST /socket.io/?EIO=4&transport=polling&t=PLsZ65_&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:18:11,371 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:18:11] "GET /socket.io/?EIO=4&transport=polling&t=PLsZ65_.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:18:11,377 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:18:11] "POST /socket.io/?EIO=4&transport=polling&t=PLsZCCk&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:18:36,378 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:18:36] "GET /socket.io/?EIO=4&transport=polling&t=PLsZCCk.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:18:36,384 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:18:36] "POST /socket.io/?EIO=4&transport=polling&t=PLsZIJT&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:19:01,385 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:19:01] "GET /socket.io/?EIO=4&transport=polling&t=PLsZIJT.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:19:01,389 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:19:01] "POST /socket.io/?EIO=4&transport=polling&t=PLsZOQB&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:19:26,391 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:19:26] "GET /socket.io/?EIO=4&transport=polling&t=PLsZOQC&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:19:26,396 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:19:26] "POST /socket.io/?EIO=4&transport=polling&t=PLsZUWw&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:19:51,397 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:19:51] "GET /socket.io/?EIO=4&transport=polling&t=PLsZUWw.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:19:51,402 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:19:51] "POST /socket.io/?EIO=4&transport=polling&t=PLsZade&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:20:16,403 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:20:16] "GET /socket.io/?EIO=4&transport=polling&t=PLsZade.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:20:16,409 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:20:16] "POST /socket.io/?EIO=4&transport=polling&t=PLsZgkL&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:20:41,409 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:20:41] "GET /socket.io/?EIO=4&transport=polling&t=PLsZgkL.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:20:41,412 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:20:41] "POST /socket.io/?EIO=4&transport=polling&t=PLsZmr3&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:21:06,414 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:21:06] "GET /socket.io/?EIO=4&transport=polling&t=PLsZmr4&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:21:06,419 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:21:06] "POST /socket.io/?EIO=4&transport=polling&t=PLsZsxm&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:21:31,422 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:21:31] "GET /socket.io/?EIO=4&transport=polling&t=PLsZsxn&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:21:31,430 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:21:31] "POST /socket.io/?EIO=4&transport=polling&t=PLsZz2Y&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:21:56,431 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:21:56] "GET /socket.io/?EIO=4&transport=polling&t=PLsZz2Y.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:21:56,439 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:21:56] "POST /socket.io/?EIO=4&transport=polling&t=PLsa39I&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:22:21,440 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:22:21] "GET /socket.io/?EIO=4&transport=polling&t=PLsa39I.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:22:21,448 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:22:21] "POST /socket.io/?EIO=4&transport=polling&t=PLsa9G4&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:22:30,778 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:22:30] "[31m[1mPOST /api/start-conversion HTTP/1.1[0m" 400 -
+2025-03-09 03:22:46,448 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:22:46] "GET /socket.io/?EIO=4&transport=polling&t=PLsa9G4.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:22:46,453 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:22:46] "POST /socket.io/?EIO=4&transport=polling&t=PLsaFMp&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:23:11,455 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:23:11] "GET /socket.io/?EIO=4&transport=polling&t=PLsaFMq&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:23:11,457 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:23:11] "POST /socket.io/?EIO=4&transport=polling&t=PLsaLTX&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:23:36,462 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:23:36] "GET /socket.io/?EIO=4&transport=polling&t=PLsaLTY&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:23:36,469 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:23:36] "POST /socket.io/?EIO=4&transport=polling&t=PLsaRaG&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:24:01,470 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:24:01] "GET /socket.io/?EIO=4&transport=polling&t=PLsaRaH&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:24:01,475 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:24:01] "POST /socket.io/?EIO=4&transport=polling&t=PLsaXh0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:24:26,475 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:24:26] "GET /socket.io/?EIO=4&transport=polling&t=PLsaXh0.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:24:26,480 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:24:26] "POST /socket.io/?EIO=4&transport=polling&t=PLsadnj&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:24:51,481 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:24:51] "GET /socket.io/?EIO=4&transport=polling&t=PLsadnj.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:24:51,487 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:24:51] "POST /socket.io/?EIO=4&transport=polling&t=PLsajuR&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:25:16,487 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:25:16] "GET /socket.io/?EIO=4&transport=polling&t=PLsajuR.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:25:16,494 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:25:16] "POST /socket.io/?EIO=4&transport=polling&t=PLsap_A&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:25:41,495 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:25:41] "GET /socket.io/?EIO=4&transport=polling&t=PLsap_B&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:25:41,498 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:25:41] "POST /socket.io/?EIO=4&transport=polling&t=PLsaw5w&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:26:06,502 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:26:06] "GET /socket.io/?EIO=4&transport=polling&t=PLsaw5w.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:26:06,506 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:26:06] "POST /socket.io/?EIO=4&transport=polling&t=PLsb0Cf&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:26:31,509 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:26:31] "GET /socket.io/?EIO=4&transport=polling&t=PLsb0Cf.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:26:31,509 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:26:31] "POST /socket.io/?EIO=4&transport=polling&t=PLsb6JN&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:26:56,514 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:26:56] "GET /socket.io/?EIO=4&transport=polling&t=PLsb6JN.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:26:56,520 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:26:56] "POST /socket.io/?EIO=4&transport=polling&t=PLsbCQ4&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:27:21,521 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:27:21] "GET /socket.io/?EIO=4&transport=polling&t=PLsbCQ5&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:27:21,525 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:27:21] "POST /socket.io/?EIO=4&transport=polling&t=PLsbIWp&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:27:46,527 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:27:46] "GET /socket.io/?EIO=4&transport=polling&t=PLsbIWq&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:27:46,527 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:27:46] "POST /socket.io/?EIO=4&transport=polling&t=PLsbOdZ&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:28:11,534 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:28:11] "GET /socket.io/?EIO=4&transport=polling&t=PLsbOdZ.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:28:11,536 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:28:11] "POST /socket.io/?EIO=4&transport=polling&t=PLsbUkH&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+=======
+2025-03-09 02:56:08,806 - __main__ - INFO - System: win32
+2025-03-09 02:56:08,806 - __main__ - INFO - Python: 3.12.9 (tags/v3.12.9:fdb8142, Feb  4 2025, 15:27:58) [MSC v.1942 64 bit (AMD64)]
+2025-03-09 02:56:08,806 - __main__ - INFO - Log file: C:\Users\92355\Desktop\Video_data_network_disk\logs\app_20250309_025608.log
+2025-03-09 02:56:08,806 - __main__ - INFO - ÎÄ¼þµ½ÊÓÆµ×ª»»ÏµÍ³Æô¶¯
+2025-03-09 02:56:08,867 - __main__ - INFO - FFmpeg ÒÑ°²×°
+2025-03-09 02:56:08,933 - __main__ - INFO - ¼ì²âµ½ NVIDIA NVENC Ó²¼þ¼ÓËÙ
+2025-03-09 02:56:08,933 - __main__ - INFO - ¼ì²âµ½ Intel QuickSync Ó²¼þ¼ÓËÙ
+2025-03-09 02:56:08,934 - __main__ - INFO - Æô¶¯Web·þÎñÆ÷: http://127.0.0.1:8080
+2025-03-09 02:56:08,935 - web_ui.server - INFO - Æô¶¯Web·þÎñÆ÷: 127.0.0.1:8080
+2025-03-09 02:56:08,947 - werkzeug - WARNING - WebSocket transport not available. Install simple-websocket for improved performance.
+2025-03-09 02:56:08,964 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+2025-03-09 02:56:08,964 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-09 02:56:12,103 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:56:12] "GET / HTTP/1.1" 200 -
+2025-03-09 02:56:12,301 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:56:12] "[36mGET /static/css/css.css HTTP/1.1[0m" 304 -
+2025-03-09 02:56:12,304 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:56:12] "[36mGET /static/js/js.js HTTP/1.1[0m" 304 -
+2025-03-09 02:56:12,796 - engineio.server - ERROR - The WebSocket transport is not available, you must install a WebSocket server that is compatible with your async mode to enable it. See the documentation for details. (further occurrences of this error will be logged with level INFO)
+2025-03-09 02:56:12,796 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:56:12] "GET /socket.io/?EIO=4&transport=polling&t=PLsUAH_ HTTP/1.1" 200 -
+2025-03-09 02:56:12,886 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:56:12] "GET /api/hardware-info HTTP/1.1" 200 -
+2025-03-09 02:56:12,954 - web_ui.server - INFO - ¿Í»§¶ËÒÑÁ¬½Ó: 8WivhIa7juVVjuh7AAAB
+2025-03-09 02:56:12,954 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:56:12] "POST /socket.io/?EIO=4&transport=polling&t=PLsUAKC&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 02:56:12,956 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:56:12] "GET /socket.io/?EIO=4&transport=polling&t=PLsUAKD&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 02:56:17,398 - converter.utils - INFO - ÎÄ¼þÒÑ»º´æ: tmp7iyy_58d
+2025-03-09 02:56:17,424 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:56:17] "POST /api/upload HTTP/1.1" 200 -
+2025-03-09 02:56:21,131 - web_ui.server - INFO - ´´½¨×ª»»ÈÎÎñ: tmpfztozjr3, 4K, 30fps, 9ºÏ1=True, Ô¤¼Æ333Ö¡
+2025-03-09 02:56:21,131 - web_ui.server - INFO - ×ª»»ÈÎÎñÒÑÆô¶¯: tmpfztozjr3
+2025-03-09 02:56:21,131 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:56:21] "POST /api/start-conversion HTTP/1.1" 200 -
+2025-03-09 02:56:22,940 - converter.frame_generator - INFO - Ö¡Éú³ÉÆ÷³õÊ¼»¯: 4K, 30fps, 16É«, 9ºÏ1=True, Ã¿Ö¡ÈÝÁ¿=460800×Ö½Ú
+2025-03-09 02:56:23,015 - converter.encoder - INFO - ÊÓÆµ±àÂëÆ÷³õÊ¼»¯Íê³É: 3840x2160, 30fps, Ó²¼þ¼ÓËÙ: NVENC=True, QSV=True
+2025-03-09 02:56:23,027 - converter.encoder - INFO - ÊÓÆµ±àÂëÆ÷ÒÑÆô¶¯£¬Êä³ö: C:\Users\92355\Desktop\Video_data_network_disk\output\tmpfztozjr3.mp4
+2025-03-09 02:56:23,028 - web_ui.server - INFO - Ó¦ÓÃ¾À´í±àÂë...
+2025-03-09 02:56:37,986 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:56:37] "GET /socket.io/?EIO=4&transport=polling&t=PLsUAO8&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 02:56:39,394 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:56:39] "POST /socket.io/?EIO=4&transport=polling&t=PLsUGXQ&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 02:56:53,568 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:56:53] "[36mGET /static/css/css.css HTTP/1.1[0m" 304 -
+2025-03-09 02:57:04,441 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:57:04] "GET /socket.io/?EIO=4&transport=polling&t=PLsUGXQ.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 02:57:05,896 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:57:05] "POST /socket.io/?EIO=4&transport=polling&t=PLsUN2p&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 02:57:30,966 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:57:30] "GET /socket.io/?EIO=4&transport=polling&t=PLsUN2q&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 02:57:31,974 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:57:31] "POST /socket.io/?EIO=4&transport=polling&t=PLsUTSy&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 02:57:56,986 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:57:56] "GET /socket.io/?EIO=4&transport=polling&t=PLsUTSz&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 02:57:59,007 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:57:59] "POST /socket.io/?EIO=4&transport=polling&t=PLsUa5t&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 02:58:24,031 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:58:24] "GET /socket.io/?EIO=4&transport=polling&t=PLsUa5u&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 02:58:24,371 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:58:24] "POST /socket.io/?EIO=4&transport=polling&t=PLsUgMR&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 02:58:49,805 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:58:49] "GET /socket.io/?EIO=4&transport=polling&t=PLsUgMS&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 02:58:51,708 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:58:51] "POST /socket.io/?EIO=4&transport=polling&t=PLsUmyC&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 02:58:58,034 - web_ui.server - INFO - Í£Ö¹×ª»»ÈÎÎñ...
+2025-03-09 02:59:02,293 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:59:02] "POST /api/stop-conversion HTTP/1.1" 200 -
+2025-03-09 02:59:02,566 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:59:02] "[31m[1mPOST /api/stop-conversion HTTP/1.1[0m" 400 -
+2025-03-09 02:59:02,735 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:59:02] "[31m[1mPOST /api/stop-conversion HTTP/1.1[0m" 400 -
+2025-03-09 02:59:03,755 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:59:03] "[31m[1mPOST /api/stop-conversion HTTP/1.1[0m" 400 -
+2025-03-09 02:59:04,166 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:59:04] "[31m[1mPOST /api/stop-conversion HTTP/1.1[0m" 400 -
+2025-03-09 02:59:05,349 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:59:05] "[31m[1mPOST /api/stop-conversion HTTP/1.1[0m" 400 -
+2025-03-09 02:59:05,892 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:59:05] "[31m[1mPOST /api/stop-conversion HTTP/1.1[0m" 400 -
+2025-03-09 02:59:08,781 - converter.encoder - INFO - Í£Ö¹Á÷Ê½±àÂëÆ÷...
+2025-03-09 02:59:09,002 - converter.encoder - INFO - ´¦ÀíÊ£Óà 0 ¸ö´ý´¦ÀíÖ¡...
+2025-03-09 02:59:09,145 - converter.encoder - WARNING - ±àÂëÆ÷Î´ÔËÐÐ
+2025-03-09 02:59:09,604 - converter.encoder - INFO - ÔªÊý¾ÝÒÑÐ´Èë: C:\Users\92355\Desktop\Video_data_network_disk\output\tmpfztozjr3_metadata.json
+2025-03-09 02:59:09,798 - web_ui.server - INFO - ×ª»»ÈÎÎñÒÑÍ£Ö¹
+2025-03-09 02:59:10,397 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:59:10] "POST /api/stop-conversion HTTP/1.1" 200 -
+2025-03-09 02:59:16,217 - web_ui.server - INFO - ´´½¨×ª»»ÈÎÎñ: tmpfztozjr3, 4K, 30fps, 9ºÏ1=True, Ô¤¼Æ333Ö¡
+2025-03-09 02:59:16,793 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:59:16] "GET /socket.io/?EIO=4&transport=polling&t=PLsUmyD&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 02:59:16,926 - converter.frame_generator - INFO - Ö¡Éú³ÉÆ÷³õÊ¼»¯: 4K, 30fps, 16É«, 9ºÏ1=True, Ã¿Ö¡ÈÝÁ¿=460800×Ö½Ú
+2025-03-09 02:59:16,931 - web_ui.server - INFO - ×ª»»ÈÎÎñÒÑÆô¶¯: tmpfztozjr3
+2025-03-09 02:59:17,637 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:59:17] "POST /api/start-conversion HTTP/1.1" 200 -
+2025-03-09 02:59:19,137 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:59:19] "POST /socket.io/?EIO=4&transport=polling&t=PLsUtGf&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 02:59:27,047 - converter.encoder - INFO - ÊÓÆµ±àÂëÆ÷³õÊ¼»¯Íê³É: 3840x2160, 30fps, Ó²¼þ¼ÓËÙ: NVENC=True, QSV=True
+2025-03-09 02:59:28,098 - converter.encoder - INFO - ÊÓÆµ±àÂëÆ÷ÒÑÆô¶¯£¬Êä³ö: C:\Users\92355\Desktop\Video_data_network_disk\output\tmpfztozjr3.mp4
+2025-03-09 02:59:44,100 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:59:44] "GET /socket.io/?EIO=4&transport=polling&t=PLsUtGf.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 02:59:45,548 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:59:45] "POST /socket.io/?EIO=4&transport=polling&t=PLsU-8J&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:00:10,641 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:00:10] "GET /socket.io/?EIO=4&transport=polling&t=PLsU-8J.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:00:11,583 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:00:11] "POST /socket.io/?EIO=4&transport=polling&t=PLsV4W9&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:00:36,669 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:00:36] "GET /socket.io/?EIO=4&transport=polling&t=PLsV4W9.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:00:37,221 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:00:37] "POST /socket.io/?EIO=4&transport=polling&t=PLsVAlu&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:01:02,769 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:01:02] "GET /socket.io/?EIO=4&transport=polling&t=PLsVAlu.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:01:03,880 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:01:03] "POST /socket.io/?EIO=4&transport=polling&t=PLsVHD7&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:01:29,040 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:01:29] "GET /socket.io/?EIO=4&transport=polling&t=PLsVHD7.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:01:30,645 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:01:30] "POST /socket.io/?EIO=4&transport=polling&t=PLsVNgB&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:01:55,881 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:01:55] "GET /socket.io/?EIO=4&transport=polling&t=PLsVNgB.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:01:56,161 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:01:56] "POST /socket.io/?EIO=4&transport=polling&t=PLsVU2-&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:02:21,131 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:02:21] "GET /socket.io/?EIO=4&transport=polling&t=PLsVU2-.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:02:21,136 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:02:21] "POST /socket.io/?EIO=4&transport=polling&t=PLsVaDF&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:02:22,975 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:02:22] "GET /socket.io/?EIO=4&transport=polling&t=PLsVaDF.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:02:22,984 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:02:22] "GET /socket.io/?EIO=4&transport=polling&t=PLsVag2&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:02:23,830 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:02:23] "GET /socket.io/?EIO=4&transport=polling&t=PLsVage&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:02:24,805 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:02:24] "GET /socket.io/?EIO=4&transport=polling&t=PLsVatQ&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:02:25,757 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:02:25] "GET /socket.io/?EIO=4&transport=polling&t=PLsVb6e&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:02:26,739 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:02:26] "GET /socket.io/?EIO=4&transport=polling&t=PLsVbLW&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:02:27,794 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:02:27] "GET /socket.io/?EIO=4&transport=polling&t=PLsVbat&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:02:28,827 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:02:28] "GET /socket.io/?EIO=4&transport=polling&t=PLsVbrN&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:02:29,827 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:02:29] "GET /socket.io/?EIO=4&transport=polling&t=PLsVc5U&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:02:30,849 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:02:30] "GET /socket.io/?EIO=4&transport=polling&t=PLsVcL6&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:02:31,913 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:02:31] "GET /socket.io/?EIO=4&transport=polling&t=PLsVcb4&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:02:32,980 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:02:32] "GET /socket.io/?EIO=4&transport=polling&t=PLsVcri&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:02:33,989 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:02:33] "GET /socket.io/?EIO=4&transport=polling&t=PLsVd6O&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:02:35,030 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:02:35] "GET /socket.io/?EIO=4&transport=polling&t=PLsVdM8&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:02:36,043 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:02:36] "GET /socket.io/?EIO=4&transport=polling&t=PLsVdcP&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:02:36,191 - web_ui.server - INFO - ËùÓÐÖ¡ÒÑ´¦Àí£¬µÈ´ý±àÂëÍê³É...
+2025-03-09 03:02:36,191 - converter.encoder - INFO - Í£Ö¹Á÷Ê½±àÂëÆ÷...
+2025-03-09 03:02:36,191 - converter.encoder - INFO - ´¦ÀíÊ£Óà 0 ¸ö´ý´¦ÀíÖ¡...
+2025-03-09 03:02:36,191 - converter.encoder - WARNING - ±àÂëÆ÷Î´ÔËÐÐ
+2025-03-09 03:02:36,194 - converter.encoder - INFO - ÔªÊý¾ÝÒÑÐ´Èë: C:\Users\92355\Desktop\Video_data_network_disk\output\tmpfztozjr3_metadata.json
+2025-03-09 03:02:36,199 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:02:36] "GET /socket.io/?EIO=4&transport=polling&t=PLsVdsE&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:02:46,138 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:02:46] "GET /socket.io/?EIO=4&transport=polling&t=PLsVduh&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:02:46,140 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:02:46] "POST /socket.io/?EIO=4&transport=polling&t=PLsVgJy&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:03:11,143 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:03:11] "GET /socket.io/?EIO=4&transport=polling&t=PLsVgJy.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:03:11,148 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:03:11] "POST /socket.io/?EIO=4&transport=polling&t=PLsVmQg&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:03:36,150 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:03:36] "GET /socket.io/?EIO=4&transport=polling&t=PLsVmQg.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:03:36,155 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:03:36] "POST /socket.io/?EIO=4&transport=polling&t=PLsVsXO&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:03:39,456 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:03:39] "GET /api/download/C:/Users/92355/Desktop/Video_data_network_disk/output/tmpfztozjr3.mp4 HTTP/1.1" 200 -
+2025-03-09 03:03:39,477 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:03:39] "[35m[1mGET /api/download/C:/Users/92355/Desktop/Video_data_network_disk/output/tmpfztozjr3.mp4 HTTP/1.1[0m" 206 -
+2025-03-09 03:04:01,160 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:04:01] "GET /socket.io/?EIO=4&transport=polling&t=PLsVsXO.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:04:01,167 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:04:01] "POST /socket.io/?EIO=4&transport=polling&t=PLsVyeB&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:04:26,167 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:04:26] "GET /socket.io/?EIO=4&transport=polling&t=PLsVyeC&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:04:26,171 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:04:26] "POST /socket.io/?EIO=4&transport=polling&t=PLsW2kv&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:04:51,174 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:04:51] "GET /socket.io/?EIO=4&transport=polling&t=PLsW2kv.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:04:51,179 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:04:51] "POST /socket.io/?EIO=4&transport=polling&t=PLsW8re&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:05:16,181 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:05:16] "GET /socket.io/?EIO=4&transport=polling&t=PLsW8re.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:05:16,181 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:05:16] "POST /socket.io/?EIO=4&transport=polling&t=PLsWEyN&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:05:41,187 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:05:41] "GET /socket.io/?EIO=4&transport=polling&t=PLsWEyO&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:05:41,191 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:05:41] "POST /socket.io/?EIO=4&transport=polling&t=PLsWL36&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:06:06,194 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:06:06] "GET /socket.io/?EIO=4&transport=polling&t=PLsWL36.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:06:06,199 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:06:06] "POST /socket.io/?EIO=4&transport=polling&t=PLsWR9q&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:06:31,201 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:06:31] "GET /socket.io/?EIO=4&transport=polling&t=PLsWR9q.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:06:31,206 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:06:31] "POST /socket.io/?EIO=4&transport=polling&t=PLsWXGa&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:06:56,207 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:06:56] "GET /socket.io/?EIO=4&transport=polling&t=PLsWXGa.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:06:56,212 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:06:56] "POST /socket.io/?EIO=4&transport=polling&t=PLsWdNH&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:07:21,213 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:07:21] "GET /socket.io/?EIO=4&transport=polling&t=PLsWdNI&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:07:21,217 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:07:21] "POST /socket.io/?EIO=4&transport=polling&t=PLsWjT_&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:07:46,220 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:07:46] "GET /socket.io/?EIO=4&transport=polling&t=PLsWjU0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:07:46,225 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:07:46] "POST /socket.io/?EIO=4&transport=polling&t=PLsWpak&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:08:11,226 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:08:11] "GET /socket.io/?EIO=4&transport=polling&t=PLsWpak.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:08:11,230 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:08:11] "POST /socket.io/?EIO=4&transport=polling&t=PLsWvhS&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:08:36,232 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:08:36] "GET /socket.io/?EIO=4&transport=polling&t=PLsWvhT&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:08:36,236 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:08:36] "POST /socket.io/?EIO=4&transport=polling&t=PLsW_oA&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:09:01,237 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:09:01] "GET /socket.io/?EIO=4&transport=polling&t=PLsW_oA.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:09:01,243 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:09:01] "POST /socket.io/?EIO=4&transport=polling&t=PLsX5uu&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:09:26,243 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:09:26] "GET /socket.io/?EIO=4&transport=polling&t=PLsX5uu.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:09:26,247 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:09:26] "POST /socket.io/?EIO=4&transport=polling&t=PLsXB_c&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:09:51,250 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:09:51] "GET /socket.io/?EIO=4&transport=polling&t=PLsXB_c.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:09:51,252 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:09:51] "POST /socket.io/?EIO=4&transport=polling&t=PLsXI6K&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:10:16,254 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:10:16] "GET /socket.io/?EIO=4&transport=polling&t=PLsXI6K.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:10:16,257 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:10:16] "POST /socket.io/?EIO=4&transport=polling&t=PLsXOD1&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:10:41,260 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:10:41] "GET /socket.io/?EIO=4&transport=polling&t=PLsXOD1.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:10:41,267 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:10:41] "POST /socket.io/?EIO=4&transport=polling&t=PLsXUJl&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:11:06,267 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:11:06] "GET /socket.io/?EIO=4&transport=polling&t=PLsXUJl.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:11:06,273 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:11:06] "POST /socket.io/?EIO=4&transport=polling&t=PLsXaQV&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:11:31,275 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:11:31] "GET /socket.io/?EIO=4&transport=polling&t=PLsXaQW&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:11:31,281 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:11:31] "POST /socket.io/?EIO=4&transport=polling&t=PLsXgXD&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:11:56,283 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:11:56] "GET /socket.io/?EIO=4&transport=polling&t=PLsXgXE&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:11:56,286 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:11:56] "POST /socket.io/?EIO=4&transport=polling&t=PLsXmdz&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:12:21,287 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:12:21] "GET /socket.io/?EIO=4&transport=polling&t=PLsXmdz.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:12:21,293 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:12:21] "POST /socket.io/?EIO=4&transport=polling&t=PLsXskg&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:12:46,293 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:12:46] "GET /socket.io/?EIO=4&transport=polling&t=PLsXskg.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:12:46,298 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:12:46] "POST /socket.io/?EIO=4&transport=polling&t=PLsXyrN&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:13:11,299 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:13:11] "GET /socket.io/?EIO=4&transport=polling&t=PLsXyrO&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:13:11,303 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:13:11] "POST /socket.io/?EIO=4&transport=polling&t=PLsY2y6&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:13:36,304 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:13:36] "GET /socket.io/?EIO=4&transport=polling&t=PLsY2y6.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:13:36,311 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:13:36] "POST /socket.io/?EIO=4&transport=polling&t=PLsY92p&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:14:01,311 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:14:01] "GET /socket.io/?EIO=4&transport=polling&t=PLsY92p.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:14:01,317 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:14:01] "POST /socket.io/?EIO=4&transport=polling&t=PLsYF9Y&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:14:26,317 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:14:26] "GET /socket.io/?EIO=4&transport=polling&t=PLsYF9Y.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:14:26,320 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:14:26] "POST /socket.io/?EIO=4&transport=polling&t=PLsYLGG&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:14:51,323 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:14:51] "GET /socket.io/?EIO=4&transport=polling&t=PLsYLGH&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:14:51,328 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:14:51] "POST /socket.io/?EIO=4&transport=polling&t=PLsYRM-&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:15:16,329 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:15:16] "GET /socket.io/?EIO=4&transport=polling&t=PLsYRM-.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:15:16,333 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:15:16] "POST /socket.io/?EIO=4&transport=polling&t=PLsYXTi&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:15:41,335 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:15:41] "GET /socket.io/?EIO=4&transport=polling&t=PLsYXTi.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:15:41,338 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:15:41] "POST /socket.io/?EIO=4&transport=polling&t=PLsYdaP&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:16:06,341 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:16:06] "GET /socket.io/?EIO=4&transport=polling&t=PLsYdaQ&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:16:06,347 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:16:06] "POST /socket.io/?EIO=4&transport=polling&t=PLsYjh7&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:16:31,347 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:16:31] "GET /socket.io/?EIO=4&transport=polling&t=PLsYjh7.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:16:31,351 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:16:31] "POST /socket.io/?EIO=4&transport=polling&t=PLsYpns&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:16:56,353 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:16:56] "GET /socket.io/?EIO=4&transport=polling&t=PLsYpns.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:16:56,357 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:16:56] "POST /socket.io/?EIO=4&transport=polling&t=PLsYvuZ&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:17:21,358 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:17:21] "GET /socket.io/?EIO=4&transport=polling&t=PLsYvuZ.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:17:21,364 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:17:21] "POST /socket.io/?EIO=4&transport=polling&t=PLsY__G&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:17:46,364 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:17:46] "GET /socket.io/?EIO=4&transport=polling&t=PLsY__H&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:17:46,369 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:17:46] "POST /socket.io/?EIO=4&transport=polling&t=PLsZ65_&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:18:11,371 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:18:11] "GET /socket.io/?EIO=4&transport=polling&t=PLsZ65_.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:18:11,377 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:18:11] "POST /socket.io/?EIO=4&transport=polling&t=PLsZCCk&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:18:36,378 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:18:36] "GET /socket.io/?EIO=4&transport=polling&t=PLsZCCk.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:18:36,384 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:18:36] "POST /socket.io/?EIO=4&transport=polling&t=PLsZIJT&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:19:01,385 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:19:01] "GET /socket.io/?EIO=4&transport=polling&t=PLsZIJT.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:19:01,389 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:19:01] "POST /socket.io/?EIO=4&transport=polling&t=PLsZOQB&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:19:26,391 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:19:26] "GET /socket.io/?EIO=4&transport=polling&t=PLsZOQC&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:19:26,396 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:19:26] "POST /socket.io/?EIO=4&transport=polling&t=PLsZUWw&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:19:51,397 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:19:51] "GET /socket.io/?EIO=4&transport=polling&t=PLsZUWw.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:19:51,402 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:19:51] "POST /socket.io/?EIO=4&transport=polling&t=PLsZade&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:20:16,403 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:20:16] "GET /socket.io/?EIO=4&transport=polling&t=PLsZade.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:20:16,409 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:20:16] "POST /socket.io/?EIO=4&transport=polling&t=PLsZgkL&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:20:41,409 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:20:41] "GET /socket.io/?EIO=4&transport=polling&t=PLsZgkL.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:20:41,412 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:20:41] "POST /socket.io/?EIO=4&transport=polling&t=PLsZmr3&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:21:06,414 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:21:06] "GET /socket.io/?EIO=4&transport=polling&t=PLsZmr4&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:21:06,419 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:21:06] "POST /socket.io/?EIO=4&transport=polling&t=PLsZsxm&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:21:31,422 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:21:31] "GET /socket.io/?EIO=4&transport=polling&t=PLsZsxn&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:21:31,430 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:21:31] "POST /socket.io/?EIO=4&transport=polling&t=PLsZz2Y&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:21:56,431 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:21:56] "GET /socket.io/?EIO=4&transport=polling&t=PLsZz2Y.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:21:56,439 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:21:56] "POST /socket.io/?EIO=4&transport=polling&t=PLsa39I&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:22:21,440 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:22:21] "GET /socket.io/?EIO=4&transport=polling&t=PLsa39I.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:22:21,448 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:22:21] "POST /socket.io/?EIO=4&transport=polling&t=PLsa9G4&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:22:30,778 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:22:30] "[31m[1mPOST /api/start-conversion HTTP/1.1[0m" 400 -
+2025-03-09 03:22:46,448 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:22:46] "GET /socket.io/?EIO=4&transport=polling&t=PLsa9G4.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:22:46,453 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:22:46] "POST /socket.io/?EIO=4&transport=polling&t=PLsaFMp&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:23:11,455 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:23:11] "GET /socket.io/?EIO=4&transport=polling&t=PLsaFMq&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:23:11,457 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:23:11] "POST /socket.io/?EIO=4&transport=polling&t=PLsaLTX&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:23:36,462 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:23:36] "GET /socket.io/?EIO=4&transport=polling&t=PLsaLTY&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:23:36,469 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:23:36] "POST /socket.io/?EIO=4&transport=polling&t=PLsaRaG&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:24:01,470 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:24:01] "GET /socket.io/?EIO=4&transport=polling&t=PLsaRaH&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:24:01,475 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:24:01] "POST /socket.io/?EIO=4&transport=polling&t=PLsaXh0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:24:26,475 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:24:26] "GET /socket.io/?EIO=4&transport=polling&t=PLsaXh0.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:24:26,480 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:24:26] "POST /socket.io/?EIO=4&transport=polling&t=PLsadnj&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:24:51,481 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:24:51] "GET /socket.io/?EIO=4&transport=polling&t=PLsadnj.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:24:51,487 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:24:51] "POST /socket.io/?EIO=4&transport=polling&t=PLsajuR&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:25:16,487 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:25:16] "GET /socket.io/?EIO=4&transport=polling&t=PLsajuR.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:25:16,494 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:25:16] "POST /socket.io/?EIO=4&transport=polling&t=PLsap_A&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:25:41,495 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:25:41] "GET /socket.io/?EIO=4&transport=polling&t=PLsap_B&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:25:41,498 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:25:41] "POST /socket.io/?EIO=4&transport=polling&t=PLsaw5w&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:26:06,502 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:26:06] "GET /socket.io/?EIO=4&transport=polling&t=PLsaw5w.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:26:06,506 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:26:06] "POST /socket.io/?EIO=4&transport=polling&t=PLsb0Cf&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:26:31,509 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:26:31] "GET /socket.io/?EIO=4&transport=polling&t=PLsb0Cf.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:26:31,509 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:26:31] "POST /socket.io/?EIO=4&transport=polling&t=PLsb6JN&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:26:56,514 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:26:56] "GET /socket.io/?EIO=4&transport=polling&t=PLsb6JN.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:26:56,520 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:26:56] "POST /socket.io/?EIO=4&transport=polling&t=PLsbCQ4&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:27:21,521 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:27:21] "GET /socket.io/?EIO=4&transport=polling&t=PLsbCQ5&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:27:21,525 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:27:21] "POST /socket.io/?EIO=4&transport=polling&t=PLsbIWp&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:27:46,527 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:27:46] "GET /socket.io/?EIO=4&transport=polling&t=PLsbIWq&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:27:46,527 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:27:46] "POST /socket.io/?EIO=4&transport=polling&t=PLsbOdZ&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:28:11,534 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:28:11] "GET /socket.io/?EIO=4&transport=polling&t=PLsbOdZ.0&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+2025-03-09 03:28:11,536 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 03:28:11] "POST /socket.io/?EIO=4&transport=polling&t=PLsbUkH&sid=A3LSgFuTDNI88iUeAAAA HTTP/1.1" 200 -
+>>>>>>> 21916ba (Initial commit)
