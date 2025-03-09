@@ -179,6 +179,84 @@ def main():
     
     logger.info("文件到视频转换系统已关闭")
 
+<<<<<<< HEAD
 
+=======
+# 在main.py中添加性能优化选项
+
+def main():
+    """主函数"""
+    parser = argparse.ArgumentParser(description="文件到视频转换系统")
+    parser.add_argument(
+        "--host", default="127.0.0.1", 
+        help="Web服务器主机地址 (默认: 127.0.0.1)"
+    )
+    parser.add_argument(
+        "--port", type=int, default=8080, 
+        help="Web服务器端口 (默认: 8080)"
+    )
+    parser.add_argument(
+        "--debug", action="store_true", 
+        help="启用调试模式"
+    )
+    parser.add_argument(
+        "--max-performance", action="store_true", 
+        help="启用最大性能模式 (使用最多系统资源)"
+    )
+    parser.add_argument(
+        "--threads", type=int, 
+        help="指定最大工作线程数"
+    )
+    
+    args = parser.parse_args()
+    
+    # 设置日志级别
+    log_level = logging.DEBUG if args.debug else logging.INFO
+    log_file = setup_enhanced_logging(log_level)
+    
+    logger = logging.getLogger(__name__)
+    logger.info("文件到视频转换系统启动")
+    
+    # 配置性能选项
+    if args.max_performance:
+        logger.info("启用最大性能模式")
+        os.environ["CONVERTER_MAX_PERFORMANCE"] = "1"
+    
+    if args.threads:
+        logger.info(f"设置最大工作线程数: {args.threads}")
+        os.environ["CONVERTER_MAX_THREADS"] = str(args.threads)
+    
+    # 检查依赖项
+    if not check_dependencies():
+        sys.exit(1)
+    
+    # 检查环境
+    if not check_environment():
+        sys.exit(1)
+    
+    # 设置进程起始方法
+    try:
+        mp.set_start_method('spawn')
+    except RuntimeError:
+        pass  # 可能已经设置
+    
+    # 启动Web服务器
+    try:
+        logger.info(f"启动Web服务器: http://{args.host}:{args.port}")
+        print(f"\n文件到视频转换系统已启动!\n")
+        print(f"请使用浏览器访问: http://{args.host}:{args.port}\n")
+        
+        run_server(
+            host=args.host,
+            port=args.port,
+            debug=args.debug
+        )
+    except KeyboardInterrupt:
+        logger.info("接收到中断信号，正在关闭服务器")
+    except Exception as e:
+        logger.error(f"服务器运行错误: {e}", exc_info=True)
+    
+    logger.info("文件到视频转换系统已关闭")
+>>>>>>> 21916ba (Initial commit)
 if __name__ == "__main__":
     main()

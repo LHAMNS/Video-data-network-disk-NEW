@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 2025-03-09 02:44:31,689 - __main__ - INFO - System: win32
 2025-03-09 02:44:31,689 - __main__ - INFO - Python: 3.12.9 (tags/v3.12.9:fdb8142, Feb  4 2025, 15:27:58) [MSC v.1942 64 bit (AMD64)]
 2025-03-09 02:44:31,689 - __main__ - INFO - Log file: C:\Users\92355\Desktop\Video_data_network_disk\logs\app_20250309_024431.log
@@ -90,3 +91,97 @@ PermissionError: [WinError 32] ÁíÒ»¸ö³ÌÐòÕýÔÚÊ¹ÓÃ´ËÎÄ¼þ£¬½ø³ÌÎÞ·¨·ÃÎÊ¡£: 'C:\\Us
 2025-03-09 02:49:44,129 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:49:44] "POST /socket.io/?EIO=4&transport=polling&t=PLsShO-&sid=edeKMBIDfv_LsbWXAAAA HTTP/1.1" 200 -
 2025-03-09 02:49:44,130 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:49:44] "GET /socket.io/?EIO=4&transport=polling&t=PLsSguy.0&sid=edeKMBIDfv_LsbWXAAAA HTTP/1.1" 200 -
 2025-03-09 02:49:52,217 - __main__ - INFO - ÎÄ¼þµ½ÊÓÆµ×ª»»ÏµÍ³ÒÑ¹Ø±Õ
+=======
+2025-03-09 02:44:31,689 - __main__ - INFO - System: win32
+2025-03-09 02:44:31,689 - __main__ - INFO - Python: 3.12.9 (tags/v3.12.9:fdb8142, Feb  4 2025, 15:27:58) [MSC v.1942 64 bit (AMD64)]
+2025-03-09 02:44:31,689 - __main__ - INFO - Log file: C:\Users\92355\Desktop\Video_data_network_disk\logs\app_20250309_024431.log
+2025-03-09 02:44:31,689 - __main__ - INFO - ÎÄ¼þµ½ÊÓÆµ×ª»»ÏµÍ³Æô¶¯
+2025-03-09 02:44:31,736 - __main__ - INFO - FFmpeg ÒÑ°²×°
+2025-03-09 02:44:31,796 - __main__ - INFO - ¼ì²âµ½ NVIDIA NVENC Ó²¼þ¼ÓËÙ
+2025-03-09 02:44:31,796 - __main__ - INFO - ¼ì²âµ½ Intel QuickSync Ó²¼þ¼ÓËÙ
+2025-03-09 02:44:31,800 - __main__ - INFO - Æô¶¯Web·þÎñÆ÷: http://127.0.0.1:8080
+2025-03-09 02:44:31,800 - web_ui.server - INFO - Æô¶¯Web·þÎñÆ÷: 127.0.0.1:8080
+2025-03-09 02:44:31,800 - werkzeug - WARNING - WebSocket transport not available. Install simple-websocket for improved performance.
+2025-03-09 02:44:31,817 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8080
+2025-03-09 02:44:31,817 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-09 02:44:41,575 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:44:41] "GET / HTTP/1.1" 200 -
+2025-03-09 02:44:41,787 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:44:41] "GET /static/js/js.js HTTP/1.1" 200 -
+2025-03-09 02:44:41,787 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:44:41] "GET /static/css/css.css HTTP/1.1" 200 -
+2025-03-09 02:44:42,009 - engineio.server - ERROR - The WebSocket transport is not available, you must install a WebSocket server that is compatible with your async mode to enable it. See the documentation for details. (further occurrences of this error will be logged with level INFO)
+2025-03-09 02:44:42,010 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:44:42] "GET /socket.io/?EIO=4&transport=polling&t=PLsRXdu HTTP/1.1" 200 -
+2025-03-09 02:44:42,056 - web_ui.server - INFO - ¿Í»§¶ËÒÑÁ¬½Ó: yY5W9NYYSGuDs3gVAAAB
+2025-03-09 02:44:42,056 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:44:42] "POST /socket.io/?EIO=4&transport=polling&t=PLsRXf8&sid=edeKMBIDfv_LsbWXAAAA HTTP/1.1" 200 -
+2025-03-09 02:44:42,056 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:44:42] "GET /socket.io/?EIO=4&transport=polling&t=PLsRXf9&sid=edeKMBIDfv_LsbWXAAAA HTTP/1.1" 200 -
+2025-03-09 02:44:42,094 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:44:42] "GET /api/hardware-info HTTP/1.1" 200 -
+2025-03-09 02:45:05,334 - converter.utils - INFO - ÎÄ¼þÒÑ»º´æ: tmphwif4n9z, ID: 3d0fd9cb32681044c8d95a136190a7e5
+2025-03-09 02:45:05,334 - web_ui.server - ERROR - ÉÏ´«´íÎó: [WinError 32] ÁíÒ»¸ö³ÌÐòÕýÔÚÊ¹ÓÃ´ËÎÄ¼þ£¬½ø³ÌÎÞ·¨·ÃÎÊ¡£: 'C:\\Users\\92355\\AppData\\Local\\Temp\\tmphwif4n9z'
+Traceback (most recent call last):
+  File "C:\Users\92355\Desktop\Video_data_network_disk\web_ui\server.py", line 325, in upload_file
+    os.unlink(temp_file.name)
+PermissionError: [WinError 32] ÁíÒ»¸ö³ÌÐòÕýÔÚÊ¹ÓÃ´ËÎÄ¼þ£¬½ø³ÌÎÞ·¨·ÃÎÊ¡£: 'C:\\Users\\92355\\AppData\\Local\\Temp\\tmphwif4n9z'
+2025-03-09 02:45:05,341 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:45:05] "[35m[1mPOST /api/upload HTTP/1.1[0m" 500 -
+2025-03-09 02:45:07,010 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:45:07] "GET /socket.io/?EIO=4&transport=polling&t=PLsRXhz&sid=edeKMBIDfv_LsbWXAAAA HTTP/1.1" 200 -
+2025-03-09 02:45:07,015 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:45:07] "POST /socket.io/?EIO=4&transport=polling&t=PLsRdl5&sid=edeKMBIDfv_LsbWXAAAA HTTP/1.1" 200 -
+2025-03-09 02:45:19,206 - converter.utils - INFO - ÎÄ¼þÒÑ»º´æ: tmpsu7rj6to
+2025-03-09 02:45:19,208 - web_ui.server - ERROR - ÉÏ´«´íÎó: [WinError 32] ÁíÒ»¸ö³ÌÐòÕýÔÚÊ¹ÓÃ´ËÎÄ¼þ£¬½ø³ÌÎÞ·¨·ÃÎÊ¡£: 'C:\\Users\\92355\\AppData\\Local\\Temp\\tmpsu7rj6to'
+Traceback (most recent call last):
+  File "C:\Users\92355\Desktop\Video_data_network_disk\web_ui\server.py", line 325, in upload_file
+    os.unlink(temp_file.name)
+PermissionError: [WinError 32] ÁíÒ»¸ö³ÌÐòÕýÔÚÊ¹ÓÃ´ËÎÄ¼þ£¬½ø³ÌÎÞ·¨·ÃÎÊ¡£: 'C:\\Users\\92355\\AppData\\Local\\Temp\\tmpsu7rj6to'
+2025-03-09 02:45:19,214 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:45:19] "[35m[1mPOST /api/upload HTTP/1.1[0m" 500 -
+2025-03-09 02:45:32,016 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:45:32] "GET /socket.io/?EIO=4&transport=polling&t=PLsRdl5.0&sid=edeKMBIDfv_LsbWXAAAA HTTP/1.1" 200 -
+2025-03-09 02:45:32,019 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:45:32] "POST /socket.io/?EIO=4&transport=polling&t=PLsRjro&sid=edeKMBIDfv_LsbWXAAAA HTTP/1.1" 200 -
+2025-03-09 02:45:47,039 - converter.utils - INFO - ÎÄ¼þÒÑ»º´æ: tmpxl12j3f3, ID: fc7e20e8f154b47f5dd7b48e753f1d34
+2025-03-09 02:45:47,040 - web_ui.server - ERROR - ÉÏ´«´íÎó: [WinError 32] ÁíÒ»¸ö³ÌÐòÕýÔÚÊ¹ÓÃ´ËÎÄ¼þ£¬½ø³ÌÎÞ·¨·ÃÎÊ¡£: 'C:\\Users\\92355\\AppData\\Local\\Temp\\tmpxl12j3f3'
+Traceback (most recent call last):
+  File "C:\Users\92355\Desktop\Video_data_network_disk\web_ui\server.py", line 325, in upload_file
+    os.unlink(temp_file.name)
+PermissionError: [WinError 32] ÁíÒ»¸ö³ÌÐòÕýÔÚÊ¹ÓÃ´ËÎÄ¼þ£¬½ø³ÌÎÞ·¨·ÃÎÊ¡£: 'C:\\Users\\92355\\AppData\\Local\\Temp\\tmpxl12j3f3'
+2025-03-09 02:45:47,052 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:45:47] "[35m[1mPOST /api/upload HTTP/1.1[0m" 500 -
+2025-03-09 02:45:57,021 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:45:57] "GET /socket.io/?EIO=4&transport=polling&t=PLsRjro.0&sid=edeKMBIDfv_LsbWXAAAA HTTP/1.1" 200 -
+2025-03-09 02:45:57,027 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:45:57] "POST /socket.io/?EIO=4&transport=polling&t=PLsRpyW&sid=edeKMBIDfv_LsbWXAAAA HTTP/1.1" 200 -
+2025-03-09 02:46:22,027 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:46:22] "GET /socket.io/?EIO=4&transport=polling&t=PLsRpyW.0&sid=edeKMBIDfv_LsbWXAAAA HTTP/1.1" 200 -
+2025-03-09 02:46:22,027 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:46:22] "POST /socket.io/?EIO=4&transport=polling&t=PLsRw3E&sid=edeKMBIDfv_LsbWXAAAA HTTP/1.1" 200 -
+2025-03-09 02:46:36,879 - converter.utils - INFO - ÎÄ¼þÒÑ»º´æ: tmpfztozjr3, ID: 955f889c2e518d9725084edce979aaa1
+2025-03-09 02:46:36,880 - web_ui.server - ERROR - ÉÏ´«´íÎó: [WinError 32] ÁíÒ»¸ö³ÌÐòÕýÔÚÊ¹ÓÃ´ËÎÄ¼þ£¬½ø³ÌÎÞ·¨·ÃÎÊ¡£: 'C:\\Users\\92355\\AppData\\Local\\Temp\\tmpfztozjr3'
+Traceback (most recent call last):
+  File "C:\Users\92355\Desktop\Video_data_network_disk\web_ui\server.py", line 325, in upload_file
+    os.unlink(temp_file.name)
+PermissionError: [WinError 32] ÁíÒ»¸ö³ÌÐòÕýÔÚÊ¹ÓÃ´ËÎÄ¼þ£¬½ø³ÌÎÞ·¨·ÃÎÊ¡£: 'C:\\Users\\92355\\AppData\\Local\\Temp\\tmpfztozjr3'
+2025-03-09 02:46:36,894 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:46:36] "[35m[1mPOST /api/upload HTTP/1.1[0m" 500 -
+2025-03-09 02:46:47,033 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:46:47] "GET /socket.io/?EIO=4&transport=polling&t=PLsRw3F&sid=edeKMBIDfv_LsbWXAAAA HTTP/1.1" 200 -
+2025-03-09 02:46:47,040 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:46:47] "POST /socket.io/?EIO=4&transport=polling&t=PLsS09x&sid=edeKMBIDfv_LsbWXAAAA HTTP/1.1" 200 -
+2025-03-09 02:47:12,040 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:47:12] "GET /socket.io/?EIO=4&transport=polling&t=PLsS09y&sid=edeKMBIDfv_LsbWXAAAA HTTP/1.1" 200 -
+2025-03-09 02:47:12,044 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:47:12] "POST /socket.io/?EIO=4&transport=polling&t=PLsS6Gg&sid=edeKMBIDfv_LsbWXAAAA HTTP/1.1" 200 -
+2025-03-09 02:47:37,045 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:47:37] "GET /socket.io/?EIO=4&transport=polling&t=PLsS6Gg.0&sid=edeKMBIDfv_LsbWXAAAA HTTP/1.1" 200 -
+2025-03-09 02:47:37,050 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:47:37] "POST /socket.io/?EIO=4&transport=polling&t=PLsSCNN&sid=edeKMBIDfv_LsbWXAAAA HTTP/1.1" 200 -
+2025-03-09 02:48:02,051 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:48:02] "GET /socket.io/?EIO=4&transport=polling&t=PLsSCNN.0&sid=edeKMBIDfv_LsbWXAAAA HTTP/1.1" 200 -
+2025-03-09 02:48:02,051 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:48:02] "POST /socket.io/?EIO=4&transport=polling&t=PLsSIU5&sid=edeKMBIDfv_LsbWXAAAA HTTP/1.1" 200 -
+2025-03-09 02:48:27,056 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:48:27] "GET /socket.io/?EIO=4&transport=polling&t=PLsSIU8&sid=edeKMBIDfv_LsbWXAAAA HTTP/1.1" 200 -
+2025-03-09 02:48:27,057 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:48:27] "POST /socket.io/?EIO=4&transport=polling&t=PLsSOaq&sid=edeKMBIDfv_LsbWXAAAA HTTP/1.1" 200 -
+2025-03-09 02:48:43,512 - converter.utils - INFO - ÎÄ¼þÒÑ»º´æ: tmpcpbjsxon, ID: 7f1d597df29ba0462f681b22c8c6bc2c
+2025-03-09 02:48:43,513 - web_ui.server - ERROR - ÉÏ´«´íÎó: [WinError 32] ÁíÒ»¸ö³ÌÐòÕýÔÚÊ¹ÓÃ´ËÎÄ¼þ£¬½ø³ÌÎÞ·¨·ÃÎÊ¡£: 'C:\\Users\\92355\\AppData\\Local\\Temp\\tmpcpbjsxon'
+Traceback (most recent call last):
+  File "C:\Users\92355\Desktop\Video_data_network_disk\web_ui\server.py", line 325, in upload_file
+    os.unlink(temp_file.name)
+PermissionError: [WinError 32] ÁíÒ»¸ö³ÌÐòÕýÔÚÊ¹ÓÃ´ËÎÄ¼þ£¬½ø³ÌÎÞ·¨·ÃÎÊ¡£: 'C:\\Users\\92355\\AppData\\Local\\Temp\\tmpcpbjsxon'
+2025-03-09 02:48:43,524 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:48:43] "[35m[1mPOST /api/upload HTTP/1.1[0m" 500 -
+2025-03-09 02:48:52,062 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:48:52] "GET /socket.io/?EIO=4&transport=polling&t=PLsSOar&sid=edeKMBIDfv_LsbWXAAAA HTTP/1.1" 200 -
+2025-03-09 02:48:52,067 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:48:52] "POST /socket.io/?EIO=4&transport=polling&t=PLsSUhW&sid=edeKMBIDfv_LsbWXAAAA HTTP/1.1" 200 -
+2025-03-09 02:49:15,316 - converter.utils - INFO - ÎÄ¼þÒÑ»º´æ: tmptjdqakkr
+2025-03-09 02:49:15,317 - web_ui.server - ERROR - ÉÏ´«´íÎó: [WinError 32] ÁíÒ»¸ö³ÌÐòÕýÔÚÊ¹ÓÃ´ËÎÄ¼þ£¬½ø³ÌÎÞ·¨·ÃÎÊ¡£: 'C:\\Users\\92355\\AppData\\Local\\Temp\\tmptjdqakkr'
+Traceback (most recent call last):
+  File "C:\Users\92355\Desktop\Video_data_network_disk\web_ui\server.py", line 325, in upload_file
+    os.unlink(temp_file.name)
+PermissionError: [WinError 32] ÁíÒ»¸ö³ÌÐòÕýÔÚÊ¹ÓÃ´ËÎÄ¼þ£¬½ø³ÌÎÞ·¨·ÃÎÊ¡£: 'C:\\Users\\92355\\AppData\\Local\\Temp\\tmptjdqakkr'
+2025-03-09 02:49:15,329 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:49:15] "[35m[1mPOST /api/upload HTTP/1.1[0m" 500 -
+2025-03-09 02:49:17,067 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:49:17] "GET /socket.io/?EIO=4&transport=polling&t=PLsSUhW.0&sid=edeKMBIDfv_LsbWXAAAA HTTP/1.1" 200 -
+2025-03-09 02:49:17,073 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:49:17] "POST /socket.io/?EIO=4&transport=polling&t=PLsSaoF&sid=edeKMBIDfv_LsbWXAAAA HTTP/1.1" 200 -
+2025-03-09 02:49:42,073 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:49:42] "GET /socket.io/?EIO=4&transport=polling&t=PLsSaoF.0&sid=edeKMBIDfv_LsbWXAAAA HTTP/1.1" 200 -
+2025-03-09 02:49:42,078 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:49:42] "POST /socket.io/?EIO=4&transport=polling&t=PLsSguy&sid=edeKMBIDfv_LsbWXAAAA HTTP/1.1" 200 -
+2025-03-09 02:49:44,128 - web_ui.server - INFO - ¿Í»§¶ËÒÑ¶Ï¿ª: yY5W9NYYSGuDs3gVAAAB
+2025-03-09 02:49:44,129 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:49:44] "POST /socket.io/?EIO=4&transport=polling&t=PLsShO-&sid=edeKMBIDfv_LsbWXAAAA HTTP/1.1" 200 -
+2025-03-09 02:49:44,130 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 02:49:44] "GET /socket.io/?EIO=4&transport=polling&t=PLsSguy.0&sid=edeKMBIDfv_LsbWXAAAA HTTP/1.1" 200 -
+2025-03-09 02:49:52,217 - __main__ - INFO - ÎÄ¼þµ½ÊÓÆµ×ª»»ÏµÍ³ÒÑ¹Ø±Õ
+>>>>>>> 21916ba (Initial commit)
