@@ -25,10 +25,21 @@ import mimetypes
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from converter import (
-    CacheManager, ReedSolomonEncoder, FrameGenerator, OptimizedFrameGenerator,
-    VideoEncoder, StreamingVideoEncoder, calculate_video_params
+    CacheManager,
+    ReedSolomonEncoder,
+    FrameGenerator,
+    OptimizedFrameGenerator,
+    VideoEncoder,
+    StreamingVideoEncoder,
+    calculate_video_params,
 )
 from converter.utils import is_nvenc_available, is_qsv_available
+from converter.pipeline import (
+    ConversionPipeline,
+    ErrorCorrectionStage,
+    FrameGenerationStage,
+    VideoEncodingStage,
+)
 
 # 配置日志
 # Configure logging
@@ -505,36 +516,22 @@ class ConversionTask:
                 data_source = data_generator
             
             self._update_task_status("converting")
-            
-            # 生成帧并编码
-            frames_processed = 0
-            for frame in self.frame_generator.generate_frames_from_data(
-                data_source, callback=self._frame_generated_callback
-            ):
-                if not self.running:
-                    logger.info(f"帧生成过程中任务被停止 [{self.task_id}]")
-                    self._update_task_status("stopped")
-                    return
-                
-                # 添加帧到视频编码器
-                success = self.video_encoder.add_frame(frame)
-                if not success:
-                    error_msg = "向视频编码器添加帧失败"
-                    logger.error(f"{error_msg} [{self.task_id}]")
-                    self._update_task_status("error", error_msg)
-                    socketio.emit('conversion_error', {"error": error_msg, "task_id": self.task_id})
-                    return
-                
-                frames_processed += 1
-                
-                # 每100帧检查一次FFmpeg进程状态
-                if frames_processed % 100 == 0:
-                    if self.video_encoder.process.poll() is not None:
-                        error_msg = f"FFmpeg进程意外退出，返回码: {self.video_encoder.process.returncode}"
-                        logger.error(f"{error_msg} [{self.task_id}]")
-                        self._update_task_status("error", error_msg)
-                        socketio.emit('conversion_error', {"error": error_msg, "task_id": self.task_id})
-                        return
+
+            # 使用流水线处理数据
+            pipeline_config = {"limits": {"memory_mb": 1024, "max_concurrent_tasks": 2}}
+            pipeline = ConversionPipeline(pipeline_config)
+
+            if self.error_correction_enabled and self.error_correction:
+                pipeline.register_stage(ErrorCorrectionStage(self.error_correction))
+
+            pipeline.register_stage(
+                FrameGenerationStage(self.frame_generator, callback=self._frame_generated_callback)
+            )
+            pipeline.register_stage(VideoEncodingStage(self.video_encoder))
+
+            pipeline.execute(data_source, {"task_id": self.task_id})
+
+            frames_processed = self.processed_frames
             
             # 修复：更新实际总帧数为已处理的帧数，确保进度条显示正确
             if self.running:
@@ -563,9 +560,13 @@ class ConversionTask:
             if self.running:
                 logger.info(f"所有帧已处理 [{self.task_id}]，等待编码完成...")
                 self._update_task_status("finalizing")
-                
+
                 try:
-                    stats = self.video_encoder.stop()
+                    stats = None
+                    if hasattr(self.video_encoder, 'stop'):
+                        # VideoEncodingStage already stopped encoder,
+                        # but call again for safety if still running.
+                        stats = self.video_encoder.stop()
                     logger.info(f"编码已完成 [{self.task_id}], 统计: {stats}")
                     
                     # 验证输出文件
