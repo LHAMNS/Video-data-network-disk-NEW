@@ -3,10 +3,7 @@
 性能优先，使用多种高级优化技术
 """
 
-import os
-import json
 import logging
-import time
 from pathlib import Path
 
 # 设置日志
@@ -46,18 +43,9 @@ COLOR_PALETTE_16 = [
 
 # 视频参数预设
 VIDEO_PRESETS = {
-    "4K": {
-        "width": 3840,
-        "height": 2160,
-    },
-    "1080p": {
-        "width": 1920,
-        "height": 1080,
-    },
-    "720p": {
-        "width": 1280,
-        "height": 720,
-    }
+    "4K": {"width": 3840, "height": 2160},
+    "1080p": {"width": 1920, "height": 1080},
+    "720p": {"width": 1280, "height": 720},
 }
 
 # 预设FPS范围
@@ -74,5 +62,5 @@ from .error_correction import ReedSolomonEncoder
 from .frame_generator import FrameGenerator, OptimizedFrameGenerator
 
 # 最后导入编码器类，解决循环依赖
-# Import encoder classes last to avoid circular imports
 from .encoder import VideoEncoder, StreamingVideoEncoder, BatchVideoEncoder
+from .avi_writer import SimpleAVIWriter, convert_bytes_to_avi

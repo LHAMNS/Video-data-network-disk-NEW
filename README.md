@@ -13,6 +13,7 @@
   - `frame_generator.py`：将字节数据映射为图像帧，可选择 9 合 1 像素模式以提高抗压缩能力。
   - `encoder.py`：调用 FFmpeg 对帧序列进行视频编码，支持流式与批量两种方式，并可使用 GPU 加速。
   - `decoder.py`：将生成的视频还原为原始数据，支持并行处理。
+  - `avi_writer.py`：直接将 RGB 帧写入无压缩 AVI，速度仅受磁盘影响。
   - `error_correction.py`：实现 Reed–Solomon 及 XOR 交错等纠错算法。
 - `web_ui/`：Web 前端及服务器逻辑。
   - `server.py`：Flask + Socket.IO 服务端，实现文件上传、任务管理、实时进度推送等功能。
