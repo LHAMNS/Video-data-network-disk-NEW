@@ -11,7 +11,7 @@
   - `__init__.py`：全局常量与通用配置，如调色板、分辨率预设等。
   - `utils.py`：缓存管理、硬件加速检测及其他工具函数。
   - `frame_generator.py`：将字节数据映射为图像帧，可选择 9 合 1 像素模式以提高抗压缩能力。
-  - `encoder.py`：调用 FFmpeg 对帧序列进行视频编码，支持流式与批量两种方式，并可使用 GPU 加速。
+  - `encoder.py`：提供直接写入 AVI 的高性能编码器，支持流式或并行方式，并可结合 GPU 加速。
   - `decoder.py`：将生成的视频还原为原始数据，支持并行处理。
   - `avi_writer.py`：直接将 RGB 帧写入无压缩 AVI，速度仅受磁盘影响。
   - `error_correction.py`：实现 Reed–Solomon 及 XOR 交错等纠错算法。
@@ -28,7 +28,7 @@
 2. **文件上传**：在浏览器访问首页后，选择或拖放文件进行上传。文件首先被保存到临时目录并写入 `cache/`，同时计算视频参数（分辨率、帧数、预计大小等）。
 3. **创建转换任务**：前端发送参数（分辨率、帧率、是否 9 合 1、纠错比例等）到 `/api/start-conversion`。`server.py` 创建 `ConversionTask` 并在后台线程中运行。
 4. **帧生成**：任务读取缓存中的文件数据，通过 `FrameGenerator` 或 `OptimizedFrameGenerator` 逐块生成图像帧。如果启用纠错，则由 `ReedSolomonEncoder` 等模块在数据流中加入冗余信息。
-5. **视频编码**：`StreamingVideoEncoder` 或 `BatchVideoEncoder` 将帧序列通过 FFmpeg 编码为 MP4 等格式，可根据硬件情况选择 NVENC/QSV/GPU 或软件编码方式。
+5. **视频编码**：`StreamingDirectAVIEncoder` 等模块将帧序列写入无压缩 AVI，充分利用高速存储带宽。
 6. **进度推送**：生成帧与编码过程中实时调用 Socket.IO 将当前帧数、预览图、估计剩余时间等信息推送至前端界面。
 7. **任务完成**：编码结束后生成的视频文件保存在 `output/` 目录，并通过前端提供下载链接。系统还会验证视频文件完整性并记录日志。
 8. **视频解码（可选）**：`decoder.py` 提供将视频恢复为原始数据的功能，便于校验或反向还原。
