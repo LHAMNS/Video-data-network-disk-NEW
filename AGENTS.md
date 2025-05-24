@@ -1,511 +1,342 @@
-# Comprehensive Improvement Plan for File-to-Video Conversion System
+# GPU Upgrade & AVI Migration Guide
 
-## 1. Critical Architectural Restructuring
+> **Scope** – This guide describes the precise steps required to migrate the Web‑UI conversion server from the legacy CPU/MP4 pipeline to the new GPU‑accelerated Raptor pipeline that outputs **AVI** containers. Follow the sequence exactly; each pre‑condition is mandatory.
 
-### 1.1 Unified Processing Pipeline
-The system requires a fundamental architectural realignment to reconcile the disparities between the AGENTS.md design (GPU-optimized CLI application) and the current web-based implementation:
+---
+
+## 1  Overview of Functional Changes
+
+| Area             | Old Behaviour                                      | New Behaviour                                              |
+| ---------------- | -------------------------------------------------- | ---------------------------------------------------------- |
+| Error‑correction | `ReedSolomonEncoder` (CPU)                         | `get_optimal_error_corrector()` → Raptor LDPC (GPU)        |
+| Frame generation | `FrameGenerator` / `OptimizedFrameGenerator` (CPU) | `GPUFrameGenerator` with CUDA fallback to CPU              |
+| Video encoding   | `StreamingVideoEncoder` (MP4/H.264)                | `StreamingDirectAVIEncoder` (AVI/MJPEG)                    |
+| Metadata         | None                                               | `VideoRaptorEncoder` adds metadata/calibration/sync frames |
+| File extension   | `.mp4`                                             | `.avi`                                                     |
+| MIME type        | `video/mp4`                                        | `video/x‑msvideo`                                          |
+| Checksum         | not present                                        | 16‑digit SHA‑256 prefix stored in metadata                 |
+
+All application‑level REST and Socket.IO semantics remain unchanged.
+
+---
+
+## 2  Prerequisites
+
+1. **CUDA‑capable GPU** with driver ≥ 525 and CUDA toolkit ≥ 12.0.
+2. **FFmpeg ≥ 6.1** compiled with `--enable-libmjpeg` and support for AVI muxing (default in official builds).
+3. **Python ≥ 3.10** with the packages listed in `requirements.txt` **plus**:
+
+   * `cupy` (GPU arrays)
+   * `numba[cuda]` (kernel JIT)
+   * `pyldpc` (Raptor inner codes)
+   * `opencv-python` (MJPEG validation)
+4. Linux kernel 5.15+ or Windows 10 22H2. macOS is **not supported** for GPU mode.
+
+> **Tip:** If the system lacks a compatible GPU, the code automatically falls back to CPU paths; performance will, however, be substantially lower.
+
+---
+
+## 3  Directory Additions
+
+```
+converter/
+ ├── gpu_error_correction.py        # new – Raptor LDPC front‑end
+ ├── gpu_frame_generator.py         # new – CUDA frame synthesis
+ └── encoder/
+     └── StreamingDirectAVIEncoder.py  # new – MJPEG‑in‑AVI writer
+```
+
+Ensure these files are committed **before** applying the patch.
+
+---
+
+## 4  Applying the Source Patch
+
+The patch only touches `server.py`. Place `server.patch` at the project root and execute:
+
+```bash
+cd <project‑root>
+patch -p1 < server.patch
+```
+
+The following will occur automatically:
+
+* New imports (`hashlib`, GPU modules) added.
+* Default output extension switched to `.avi`.
+* Default MIME switched to `video/x‑msvideo`.
+* GPU‑aware replacement for `ConversionTask._conversion_worker`.
+
+> **Validation:** `git diff` must show **no remaining hunks** after the patch.
+
+---
+
+## 5  Dependencies Update
+
+Append the following to `requirements.txt` (exact versions tested in CI):
+
+```
+cupy-cuda12x==13.2.0
+numba==0.59.1
+pyldpc==0.5.2
+opencv-python>=4.9.0.0
+```
+
+Then create/refresh the virtual environment:
+
+```bash
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate.bat
+pip install -r requirements.txt
+```
+
+---
+
+## 6  Database & Cache Compatibility
+
+* The cache schema is **unchanged**; no migration steps required.
+* Old `.mp4` outputs already present in `output/` remain readable and downloadable. Download endpoints still infer MIME via `mimetypes.guess_type`; hence legacy files continue to serve correctly.
+
+---
+
+## 7  Functional Test Procedure
+
+1. **Unit tests** (run in venv):
+
+   ```bash
+   pytest tests/test_gpu_pipeline.py -q
+   ```
+
+2. **Manual end‑to‑end smoke test** – Start the server:
+
+   ```bash
+   python server.py --debug
+   ```
+
+   * Upload a ≤ 10 MB sample file via Web‑UI.
+   * Observe log – it must print:
+
+     * `Initializing Raptor error correction`
+     * `Using GPU-accelerated frame generator`
+     * `Encoding complete [TASK_ID]: { ... }`
+   * Confirm a `.avi` file appears in `output/`.
+   * Download via UI and play with VLC; video must open and show metadata frame for ≈ 1 s.
+
+3. **Fallback test** – Run the same procedure on a machine **without** a CUDA‑enabled GPU. Logs should print `Using CPU frame generator`; the process must still succeed, albeit slower.
+
+---
+
+## 8  Deployment Checklist
+
+* [ ] All new Python modules committed.
+* [ ] Patch applied cleanly.
+* [ ] `requirements.txt` updated and dependencies installed.
+* [ ] FFmpeg ≥ 6.1 present in `$PATH`.
+* [ ] GPU validation test (Section 7) passes.
+* [ ] Monitoring/cleanup background threads verified (no regressions).
+
+---
+
+## 9  Rollback Strategy
+
+1. `git revert <merge‑commit>` or `git checkout` the previous commit on `server.py`.
+2. Delete new GPU modules if not needed.
+3. Remove added packages from the virtual environment.
+4. Restart the Flask server.
+
+No data migration is required; the system will resume MP4 output immediately.
+
+---
+
+## 10  Troubleshooting Matrix
+
+| Symptom                               | Likely Cause                         | Resolution                                                 |
+| ------------------------------------- | ------------------------------------ | ---------------------------------------------------------- |
+| `RuntimeError: CUDA driver not found` | NVIDIA driver absent or incompatible | Install correct driver; verify `nvidia-smi` works          |
+| `Error correction failed: ...`        | Raptor parameters outside spec       | Check `error_correction_ratio` (0 < r ≤ 0.5)               |
+| Output verification fails             | FFmpeg build lacks MJPEG decoder     | Update FFmpeg to ≥ 6.1 official build                      |
+| Download shows 0 bytes                | Reverse‑proxy strips chunked data    | Disable compression or use `proxy_buffering off;` in Nginx |
+
+---
+
+## 11  Maintainers
+
+| Name     | Role      | Contact                 |
+| -------- | --------- | ----------------------- |
+| L. Hamns | Tech Lead | \<internal‑slack>@hamns |
+| Y. Chen  | DevOps    | \<internal‑slack>@ychen |
+
+---
+
+*Document version: 1.0 – 24 May 2025*
+
+---
+
+## Appendix A – Complete `ConversionTask._conversion_worker` Implementation
+
+> Copy‑and‑paste if you prefer a manual edit rather than applying `server.patch`.
 
 ```python
-# Proposed pipeline architecture
-class ConversionPipeline:
-    def __init__(self, config):
-        self.stages = []
-        self.resource_manager = ResourceManager(config.limits)
-        self.error_handler = ErrorHandler(config.recovery_strategies)
-        
-    def register_stage(self, stage):
-        self.stages.append(stage)
-        
-    def execute(self, input_data, context):
-        result = input_data
-        for stage in self.stages:
+# --------------- BEGIN NEW _conversion_worker ----------------
+    def _conversion_worker(self):
+        """GPU-aware conversion worker thread"""
+        try:
+            self._update_task_status("initializing")
+
+            # ---------- 1.  GPU error-correction ----------
+            if self.error_correction_enabled:
+                logger.info(f"Initializing Raptor error correction [{self.task_id}]")
+                self.error_correction = get_optimal_error_corrector(self.error_correction_ratio)
+
+            # ---------- 2.  Frame generator ----------
             try:
-                result = stage.process(result, context)
-            except Exception as e:
-                return self.error_handler.handle(e, stage, result, context)
-        return result
+                self.frame_generator = GPUFrameGenerator(
+                    resolution=self.resolution,
+                    fps=self.fps,
+                    color_count=self.color_count,
+                    nine_to_one=self.nine_to_one
+                )
+                logger.info(f"Using GPU-accelerated frame generator [{self.task_id}]")
+            except RuntimeError:
+                generator_class = OptimizedFrameGenerator if self.use_optimized_generator else FrameGenerator
+                self.frame_generator = generator_class(
+                    resolution=self.resolution,
+                    fps=self.fps,
+                    color_count=self.color_count,
+                    nine_to_one=self.nine_to_one
+                )
+                logger.info(f"Using CPU frame generator [{self.task_id}]")
+
+            # ---------- 3.  Encoder initialisation ----------
+            physical_width  = self.video_params["physical_width"]
+            physical_height = self.video_params["physical_height"]
+
+            # Metadata encoder (Raptor) for calibration & sync
+            self.raptor_encoder = VideoRaptorEncoder(physical_width, physical_height, self.fps)
+
+            from converter.encoder import StreamingDirectAVIEncoder   # lazy import
+            self.video_encoder = StreamingDirectAVIEncoder(
+                width=physical_width,
+                height=physical_height,
+                fps=self.fps,
+                output_path=self.output_path
+            )
+            self.video_encoder.start()
+
+            # ---------- 4.  Metadata / calibration frames ----------
+            if self.params.get("metadata_frames", True):
+                logger.info(f"Adding metadata frames [{self.task_id}]")
+
+                file_info = {
+                    'filename': self.original_filename,
+                    'size': self.file_size,
+                    'checksum': hashlib.sha256(str(self.file_id).encode()).hexdigest()[:16],
+                    'total_symbols': 0
+                }
+
+                self.video_encoder.add_frame(self.raptor_encoder.create_metadata_frame(file_info))
+                self.video_encoder.add_frame(self.raptor_encoder.create_calibration_frame())
+
+                sync_frame = np.zeros((physical_height, physical_width, 3), dtype=np.uint8)
+                self.raptor_encoder._add_sync_pattern(sync_frame)
+                self.video_encoder.add_frame(sync_frame)
+
+                self.processed_frames = 3
+
+            self._update_task_status("processing")
+
+            # ---------- 5.  Read source data ----------
+            data_generator = cache_manager.read_cached_file(self.file_id)
+            all_data = bytearray()
+            for chunk in data_generator:
+                if not self.running:
+                    logger.info(f"Data collection interrupted [{self.task_id}]")
+                    self._update_task_status("stopped")
+                    return
+                all_data.extend(chunk)
+
+            # ---------- 6.  Error-correction ----------
+            if self.error_correction_enabled and self.error_correction:
+                logger.info(f"Applying Raptor error correction [{self.task_id}]…")
+                self._update_task_status("error_correction")
+                try:
+                    encoded_data, stats = self.error_correction.process_file_data(bytes(all_data))
+                    logger.info(f"Raptor encoding complete [{self.task_id}]: "
+                                f"{stats['throughput_mbps']:.1f} MB/s, "
+                                f"redundancy: {stats['redundancy_ratio']:.2%}")
+                    data_source = encoded_data
+                except Exception as e:
+                    error_msg = f"Error correction failed: {e}"
+                    logger.error(f"{error_msg} [{self.task_id}]", exc_info=True)
+                    self._update_task_status("error", error_msg)
+                    socketio.emit('conversion_error', {"error": error_msg, "task_id": self.task_id})
+                    return
+            else:
+                data_source = bytes(all_data)
+
+            self._update_task_status("converting")
+
+            # ---------- 7.  Frame generation & encoding ----------
+            for frame in self.frame_generator.generate_frames_from_data(
+                    data_source, callback=self._frame_generated_callback):
+                if not self.running:
+                    logger.info(f"Frame generation interrupted [{self.task_id}]")
+                    self._update_task_status("stopped")
+                    return
+                if not self.video_encoder.add_frame(frame):
+                    error_msg = "Failed to add frame to video encoder"
+                    logger.error(f"{error_msg} [{self.task_id}]")
+                    self._update_task_status("error", error_msg)
+                    socketio.emit('conversion_error', {"error": error_msg, "task_id": self.task_id})
+                    return
+
+            # ---------- 8.  Finalise ----------
+            if self.running:
+                logger.info(f"All frames processed [{self.task_id}], finalizing…")
+                self._update_task_status("finalizing")
+                try:
+                    stats = self.video_encoder.stop()
+                    logger.info(f"Encoding complete [{self.task_id}]: {stats}")
+
+                    is_valid, err = self._verify_output_video()
+                    self.output_file_verified = is_valid
+                    if not is_valid:
+                        logger.error(f"Output verification failed [{self.task_id}]: {err}")
+                        self._update_task_status("error", f"Output verification failed: {err}")
+                        socketio.emit('conversion_error',
+                                      {"error": f"Output verification failed: {err}",
+                                       "task_id": self.task_id})
+                        return
+
+                    self._update_task_status("completed", output_path=str(self.output_path))
+                    socketio.emit('conversion_complete',
+                                  {"output_file": str(self.output_path),
+                                   "filename": self.output_path.name,
+                                   "duration": time.time() - self.start_time,
+                                   "frames": self.processed_frames,
+                                   "task_id": self.task_id})
+                except Exception as e:
+                    error_msg = f"Encoding completion error: {e}"
+                    logger.error(f"{error_msg} [{self.task_id}]", exc_info=True)
+                    self._update_task_status("error", error_msg)
+                    socketio.emit('conversion_error',
+                                  {"error": error_msg, "task_id": self.task_id})
+
+        except Exception as e:
+            error_msg = f"Conversion error: {e}"
+            logger.error(f"{error_msg} [{self.task_id}]", exc_info=True)
+            self._update_task_status("error", error_msg)
+            socketio.emit('conversion_error', {"error": error_msg, "task_id": self.task_id})
+
+        finally:
+            self.running = False
+            if hasattr(self, 'video_encoder') and self.video_encoder:
+                try:
+                    if getattr(self.video_encoder, 'running', False):
+                        self.video_encoder.stop()
+                except Exception as e:
+                    logger.error(f"Error stopping video encoder [{self.task_id}]: {e}")
+            self.event.set()
+# --------------- END NEW _conversion_worker ----------------
 ```
 
-This pattern should be applied consistently throughout the codebase, replacing the current ad-hoc task handling in `server.py`.
-
-### 1.2 Resource Management System
-Implement strict resource governance to prevent system degradation:
-
-```python
-class ResourceManager:
-    def __init__(self, limits):
-        self.memory_limit = limits.memory_mb * 1024 * 1024
-        self.concurrent_tasks = ThreadPoolExecutor(max_workers=limits.max_concurrent_tasks)
-        self.current_memory = AtomicCounter(0)
-        self.semaphore = BoundedSemaphore(limits.max_concurrent_tasks)
-        
-    def allocate(self, required_memory):
-        with self.semaphore:
-            if self.current_memory.get() + required_memory > self.memory_limit:
-                raise ResourceExhaustionError("Memory limit exceeded")
-            self.current_memory.add(required_memory)
-            return ResourceAllocation(self, required_memory)
-            
-    def release(self, allocation):
-        self.current_memory.subtract(allocation.size)
-        self.semaphore.release()
-```
-
-Replace all direct thread creation and unbounded memory allocation with this centralized system.
-
-## 2. Critical Performance Bottlenecks
-
-### 2.1 Color Indexing Optimization
-Replace linear search in `decoder.py` with optimized lookup:
-
-```python
-@njit(fastmath=True, parallel=True)
-def build_color_distance_table(color_lut, color_count):
-    # Precompute distance table for all possible RGB values (discretized to reduce size)
-    table_size = 64  # Resolution for each channel
-    table = np.zeros((table_size, table_size, table_size), dtype=np.uint8)
-    
-    for r in prange(table_size):
-        for g in prange(table_size):
-            for b in prange(table_size):
-                r_scaled = int(r * 255 / (table_size - 1))
-                g_scaled = int(g * 255 / (table_size - 1))
-                b_scaled = int(b * 255 / (table_size - 1))
-                pixel = np.array([r_scaled, g_scaled, b_scaled], dtype=np.uint8)
-                
-                min_dist = float('inf')
-                closest_idx = 0
-                for i in range(color_count):
-                    dist = np.sum((pixel - color_lut[i]) ** 2)
-                    if dist < min_dist:
-                        min_dist = dist
-                        closest_idx = i
-                table[r, g, b] = closest_idx
-    
-    return table
-
-@njit(fastmath=True)
-def color_to_index_optimized(pixel, distance_table, table_size=64):
-    # Map pixel to discretized table coordinates
-    r_idx = min(table_size - 1, int(pixel[0] * (table_size / 256)))
-    g_idx = min(table_size - 1, int(pixel[1] * (table_size / 256)))
-    b_idx = min(table_size - 1, int(pixel[2] * (table_size / 256)))
-    
-    # Direct lookup instead of search
-    return distance_table[r_idx, g_idx, b_idx]
-```
-
-This precomputation reduces the per-pixel operation from O(n) to O(1).
-
-### 2.2 Memory Management Optimization
-Implement zero-copy frame handling:
-
-```python
-class ZeroCopyFrameBuffer:
-    def __init__(self, width, height, channels=3, pool_size=5):
-        self.frame_size = width * height * channels
-        self.frames = []
-        for _ in range(pool_size):
-            # Create memory-mapped buffer
-            buffer = np.memmap(tempfile.NamedTemporaryFile(prefix='frame_', suffix='.buffer', delete=False),
-                             dtype=np.uint8, mode='w+', shape=(height, width, channels))
-            self.frames.append(buffer)
-        self.available = queue.Queue()
-        for frame in self.frames:
-            self.available.put(frame)
-    
-    def get_frame(self, timeout=None):
-        try:
-            return self.available.get(timeout=timeout)
-        except queue.Empty:
-            raise ResourceExhaustionError("No frames available in pool")
-    
-    def release_frame(self, frame):
-        self.available.put(frame)
-        
-    def __del__(self):
-        for frame in self.frames:
-            try:
-                os.unlink(frame.filename)
-            except:
-                pass
-```
-
-Replace all frame buffer allocations in both `frame_generator.py` and `encoder.py`.
-
-## 3. Error Handling and Recovery
-
-### 3.1 Comprehensive Error Model
-Implement structured error handling throughout the system:
-
-```python
-class ConversionError(Exception):
-    """Base class for all conversion errors"""
-    def __init__(self, message, context=None, recoverable=False):
-        super().__init__(message)
-        self.context = context or {}
-        self.recoverable = recoverable
-        self.timestamp = time.time()
-        self.error_id = str(uuid.uuid4())
-        
-    def to_dict(self):
-        return {
-            "error_id": self.error_id,
-            "timestamp": self.timestamp,
-            "message": str(self),
-            "recoverable": self.recoverable,
-            "context": self.context
-        }
-
-class ResourceError(ConversionError):
-    """Errors related to system resources"""
-    pass
-
-class EncodingError(ConversionError):
-    """Errors in the encoding process"""
-    pass
-
-class DataIntegrityError(ConversionError):
-    """Errors related to data corruption or integrity"""
-    pass
-```
-
-Replace all generic exceptions with this structured hierarchy.
-
-### 3.2 XOR Interleaver Recovery Implementation
-Complete the missing error recovery in the XOR interleaver:
-
-```python
-@njit(fastmath=True)
-def _xor_decode_numba_with_recovery(encoded_data, block_size, interleave_factor, original_size):
-    """Improved XOR decode implementation with error recovery"""
-    data_len = len(encoded_data)
-    
-    # Calculate blocks (not including redundancy)
-    usable_len = data_len * interleave_factor // (interleave_factor + 1)
-    usable_len = (usable_len // block_size) * block_size
-    total_blocks = usable_len // block_size
-    
-    # Create output array
-    output = np.frombuffer(encoded_data[:usable_len], dtype=np.uint8).copy()
-    
-    # Process each interleave group
-    for i in range(0, total_blocks, interleave_factor):
-        end_block = min(i + interleave_factor, total_blocks)
-        # Get redundancy block
-        redundancy_pos = usable_len + (i // interleave_factor) * block_size
-        xor_block = np.frombuffer(encoded_data[redundancy_pos:redundancy_pos + block_size], dtype=np.uint8)
-        
-        # Calculate checksums for error detection
-        expected_checksums = np.zeros(end_block - i, dtype=np.uint32)
-        actual_checksums = np.zeros(end_block - i, dtype=np.uint32)
-        
-        # XOR of all blocks should equal redundancy block
-        calculated_xor = np.zeros(block_size, dtype=np.uint8)
-        
-        for j in range(i, end_block):
-            block_idx = j - i
-            block_start = j * block_size
-            block_end = block_start + block_size
-            
-            # Calculate checksum for integrity validation
-            block_data = output[block_start:block_end]
-            actual_checksums[block_idx] = np.sum(block_data)
-            
-            # Add to calculated XOR
-            calculated_xor ^= block_data
-            
-        # Validate with redundancy block
-        xor_valid = np.array_equal(calculated_xor, xor_block)
-        
-        if not xor_valid:
-            # Detect which block is corrupt using checksums
-            # Since we don't have original checksums, try reconstructing each block
-            # and see which one produces valid XOR
-            for j in range(i, end_block):
-                block_idx = j - i
-                block_start = j * block_size
-                block_end = block_start + block_size
-                
-                # Try reconstructing this block
-                temp_block = np.zeros(block_size, dtype=np.uint8)
-                temp_xor = np.zeros(block_size, dtype=np.uint8)
-                
-                # XOR all other blocks with redundancy to reconstruct this one
-                for k in range(i, end_block):
-                    if k != j:
-                        k_start = k * block_size
-                        k_end = k_start + block_size
-                        temp_xor ^= output[k_start:k_end]
-                
-                # XOR with redundancy block to get reconstructed block
-                reconstructed_block = temp_xor ^ xor_block
-                
-                # Replace the block and verify if XOR is now valid
-                original_block = output[block_start:block_end].copy()
-                output[block_start:block_end] = reconstructed_block
-                
-                # Recalculate XOR with new block
-                new_xor = np.zeros(block_size, dtype=np.uint8)
-                for k in range(i, end_block):
-                    k_start = k * block_size
-                    k_end = k_start + block_size
-                    new_xor ^= output[k_start:k_end]
-                
-                # Check if reconstruction fixed the XOR
-                if np.array_equal(new_xor, xor_block):
-                    # Block successfully recovered
-                    break
-                else:
-                    # Restore original block and try next
-                    output[block_start:block_end] = original_block
-    
-    return output[:original_size]
-```
-
-This implementation adds true error recovery capability to the XOR interleaver.
-
-## 4. Security Enhancement
-
-### 4.1 Authentication and Authorization
-Implement comprehensive security controls:
-
-```python
-# Add to server.py
-from functools import wraps
-from flask import request, jsonify
-import jwt
-import time
-
-SECRET_KEY = os.environ.get('SECRET_KEY') or os.urandom(24)
-TOKEN_EXPIRATION = 3600  # 1 hour
-
-def generate_token(user_id):
-    payload = {
-        'user_id': user_id,
-        'exp': time.time() + TOKEN_EXPIRATION,
-        'iat': time.time()
-    }
-    return jwt.encode(payload, SECRET_KEY, algorithm='HS256')
-
-def token_required(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        token = request.headers.get('Authorization')
-        if not token:
-            return jsonify({'error': 'Authentication required'}), 401
-            
-        try:
-            # Extract token from "Bearer <token>"
-            if token.startswith('Bearer '):
-                token = token[7:]
-            
-            data = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
-            current_user = data['user_id']
-        except jwt.ExpiredSignatureError:
-            return jsonify({'error': 'Token expired'}), 401
-        except:
-            return jsonify({'error': 'Invalid token'}), 401
-            
-        return f(current_user, *args, **kwargs)
-    return decorated
-
-# Secure API endpoint example
-@app.route('/api/start-conversion', methods=['POST'])
-@token_required
-def start_conversion(current_user):
-    # Now we have authenticated user
-    data = request.json
-    # Add user ID to the task context
-    data['user_id'] = current_user
-    # Continue with normal processing
-```
-
-Apply this pattern to all API endpoints.
-
-### 4.2 Input Validation and Sanitization
-Implement thorough input validation:
-
-```python
-def validate_file(file_path):
-    """Comprehensive file validation"""
-    try:
-        # Check file size
-        file_size = os.path.getsize(file_path)
-        if file_size > MAX_FILE_SIZE:
-            return False, f"File exceeds maximum size limit of {MAX_FILE_SIZE} bytes"
-            
-        # Check file type using libmagic
-        import magic
-        mime = magic.Magic(mime=True)
-        file_type = mime.from_file(file_path)
-        
-        # Whitelist of allowed mime types
-        allowed_types = ['application/pdf', 'image/jpeg', 'image/png', 'text/plain']
-        if not any(allowed in file_type for allowed in allowed_types):
-            return False, f"File type {file_type} not supported"
-            
-        # Check for malicious content
-        # Basic signature scanning implementation
-        with open(file_path, 'rb') as f:
-            content = f.read(4096)  # Read first 4KB
-            # Check for executable signatures
-            if content.startswith(b'MZ') or b'\x7fELF' in content:
-                return False, "Executable files not allowed"
-                
-        return True, "File validation passed"
-        
-    except Exception as e:
-        return False, f"Validation error: {str(e)}"
-```
-
-Apply this validation to all uploaded files before processing.
-
-## 5. Process Isolation and Resource Control
-
-### 5.1 Secure Process Execution
-Implement proper sandboxing for external processes:
-
-```python
-def run_subprocess_securely(cmd, input_data=None, timeout=60, memory_limit_mb=1024):
-    """Run a subprocess with security controls"""
-    # Create resource limits
-    import resource
-    # Set memory limit
-    memory_bytes = memory_limit_mb * 1024 * 1024
-    
-    def limit_resources():
-        # Set memory limit
-        resource.setrlimit(resource.RLIMIT_AS, (memory_bytes, memory_bytes))
-        # Prevent creation of new processes
-        resource.setrlimit(resource.RLIMIT_NPROC, (1, 1))
-        # CPU time limit
-        resource.setrlimit(resource.RLIMIT_CPU, (timeout, timeout))
-        
-        # Drop privileges if running as root
-        if os.geteuid() == 0:
-            # Create nobody user
-            nobody = pwd.getpwnam('nobody')
-            os.setgid(nobody.pw_gid)
-            os.setuid(nobody.pw_uid)
-    
-    # Validate command to prevent injection
-    sanitized_cmd = []
-    for arg in cmd:
-        if not isinstance(arg, str):
-            raise ValueError(f"Command argument must be string, got {type(arg)}")
-        # Additional validation logic here
-        sanitized_cmd.append(arg)
-    
-    # Run process with limits
-    try:
-        process = subprocess.Popen(
-            sanitized_cmd,
-            stdin=subprocess.PIPE if input_data else None,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            preexec_fn=limit_resources  # Apply resource limits before exec
-        )
-        
-        stdout, stderr = process.communicate(input=input_data, timeout=timeout)
-        return process.returncode, stdout, stderr
-        
-    except subprocess.TimeoutExpired:
-        # Kill process if it times out
-        try:
-            process.kill()
-        except:
-            pass
-        raise SecurityError("Process execution timed out")
-```
-
-Replace all direct calls to `subprocess.run` and `subprocess.Popen` with this secure wrapper.
-
-## 6. Comprehensive Test Infrastructure
-
-### 6.1 Automated Test Framework
-Implement structured testing for critical components:
-
-```python
-class TestFrameGenerator(unittest.TestCase):
-    def setUp(self):
-        # Create test data
-        self.test_data = os.urandom(1024 * 1024)  # 1MB random data
-        self.generator = FrameGenerator(resolution="720p", fps=30, color_count=16, nine_to_one=True)
-        
-    def test_frame_generation_size(self):
-        """Test that generated frames have the correct dimensions"""
-        # Generate a single frame
-        frame = self.generator.generate_frame(self.test_data[:1000], 0)
-        
-        # Check dimensions
-        self.assertEqual(frame.shape[0], 720)  # Height
-        self.assertEqual(frame.shape[1], 1280)  # Width
-        self.assertEqual(frame.shape[2], 3)    # RGB channels
-        
-    def test_frame_generation_content(self):
-        """Test that frame content correctly represents data"""
-        # Generate frame from known data
-        known_data = bytes([0, 255, 10, 20])  # Will map to specific colors
-        frame = self.generator.generate_frame(known_data, 0)
-        
-        # Extract center pixels of 9x1 blocks
-        for i in range(2):  # Check first two logical pixels
-            y = i // (1280 // 3) * 3 + 1  # Center of 3x3 block
-            x = (i % (1280 // 3)) * 3 + 1  # Center of 3x3 block
-            pixel = frame[y, x]
-            
-            # Verify pixel matches expected color from palette
-            expected_color_idx = known_data[i] & 0x0F  # First byte maps to first logical pixel
-            expected_color = self.generator.color_lut[expected_color_idx]
-            np.testing.assert_array_equal(pixel, expected_color)
-            
-    def test_full_pipeline(self):
-        """Test the complete frame generation pipeline"""
-        # Count generated frames
-        frame_count = 0
-        for frame in self.generator.generate_frames_from_data(self.test_data):
-            frame_count += 1
-            # Verify frame properties
-            self.assertIsInstance(frame, np.ndarray)
-            self.assertEqual(frame.shape, (720, 1280, 3))
-            
-        # Verify correct number of frames
-        expected_frames = self.generator.estimate_frame_count(len(self.test_data))
-        self.assertEqual(frame_count, expected_frames)
-```
-
-Create similar test classes for all major components.
-
-AND：
-1. Complete error recovery in XOR interleaver
-2. Implement resource management system
-3. Fix color indexing performance
-4. Add basic security controls
-5. Fix memory leaks in cleanup procedures
-1. Implement pipeline architecture
-2. Refactor component interfaces
-3. Create centralized error handling
-4. Implement zero-copy optimizations
-5. Add comprehensive logging
-
-
-1. Optimize parallel processing
-2. Implement frame buffering
-3. Add GPU acceleration options
-4. Optimize memory usage patterns
-5. Benchmark and tune critical paths
-
-1. Implement authentication/authorization
-2. Add process sandboxing
-3. Create comprehensive input validation
-4. Implement secure file handling
-5. Add audit logging
-
-
-1. Develop comprehensive test suite
-2. Implement continuous integration
-3. Add performance regression testing
-4. Create security scanning
-5. Implement automated validation
-
+*Updated: 24 May 2025*
