@@ -1,7 +1,5 @@
-"""
-GPU-Accelerated Reed-Solomon Error Correction
-High-performance CUDA implementation for NVIDIA GPUs
-"""
+"""GPU-accelerated Reed‑Solomon error correction using CUDA."""
+
 
 import numpy as np
 import cupy as cp

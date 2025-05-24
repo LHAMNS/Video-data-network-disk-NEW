@@ -17,5 +17,10 @@ cupy-cuda12x>=12.0.0
 # For CUDA 11.x (comment above and uncomment below):
 # cupy-cuda11x>=11.0.0
 
+cupy-cuda12x==13.2.0
+numba==0.59.1
+pyldpc==0.5.2
+opencv-python>=4.9.0.0
+
 # Error correction (removed reedsolo, using GPU Raptor codes instead)
 # reedsolo>=1.5.4  # Replaced by GPU implementation

@@ -1,7 +1,5 @@
-"""
-GPU-Accelerated Frame Generation Pipeline
-Direct GPU memory operations for maximum throughput
-"""
+"""GPU-based frame generation pipeline optimized for high throughput."""
+
 
 import numpy as np
 import cupy as cp
