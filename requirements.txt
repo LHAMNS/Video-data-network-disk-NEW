@@ -1,26 +1,23 @@
 # Core dependencies
-numpy>=1.21.0
-numba>=0.55.1
-opencv-python>=4.5.5.64
-flask>=2.0.1
-flask-socketio>=5.1.1
+numpy>=1.21.0,<2.0.0
+numba==0.59.1
+opencv-python>=4.9.0.0
+flask>=2.0.1,<3.0.0
+flask-socketio>=5.1.1,<6.0.0
 Pillow>=8.3.1
 psutil>=5.9.0
 watchdog>=2.1.6
 tqdm>=4.62.3
 python-magic>=0.4.24
 
-# GPU acceleration (optional but recommended)
-# Install appropriate version based on CUDA version:
+# GPU acceleration - Choose ONE based on CUDA version
 # For CUDA 12.x:
-cupy-cuda12x>=12.0.0
-# For CUDA 11.x (comment above and uncomment below):
-# cupy-cuda11x>=11.0.0
-
 cupy-cuda12x==13.2.0
-numba==0.59.1
-pyldpc==0.5.2
-opencv-python>=4.9.0.0
+# For CUDA 11.x (comment above, uncomment below):
+# cupy-cuda11x>=11.0.0,<12.0.0
 
-# Error correction (removed reedsolo, using GPU Raptor codes instead)
-# reedsolo>=1.5.4  # Replaced by GPU implementation
+# Raptor codes implementation
+pyldpc==0.5.2
+
+# Remove old error correction dependency
+# reedsolo>=1.5.4  # REMOVED - replaced by GPU implementation
