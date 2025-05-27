@@ -41,6 +41,12 @@ COLOR_PALETTE_16 = [
     (255, 128, 0),   # 橙
 ]
 
+# 验证调色板完整性
+assert len(COLOR_PALETTE_16) == 16, "Color palette must have exactly 16 colors"
+for i, color in enumerate(COLOR_PALETTE_16):
+    assert len(color) == 3, f"Color {i} must be RGB tuple"
+    assert all(0 <= c <= 255 for c in color), f"Color {i} values must be in range 0-255"
+
 # 视频参数预设
 VIDEO_PRESETS = {
     "4K": {"width": 3840, "height": 2160},

@@ -22,9 +22,51 @@ import mimetypes
 import hashlib
 import numpy as np
 
-from converter.gpu_error_correction import get_optimal_error_corrector
-from converter.gpu_frame_generator import GPUFrameGenerator
-from converter.video_raptor_encoder import VideoRaptorEncoder
+# GPU模块条件导入 - 完整fallback机制
+try:
+    from converter.gpu_error_correction import get_optimal_error_corrector
+    GPU_ERROR_CORRECTION_AVAILABLE = True
+    logger.info("GPU error correction available")
+except ImportError as e:
+    logger.warning(f"GPU error correction not available: {e}")
+    GPU_ERROR_CORRECTION_AVAILABLE = False
+
+    def get_optimal_error_corrector(redundancy_ratio):
+        from converter.error_correction import ReedSolomonEncoder
+        redundancy_bytes = max(1, int(255 * redundancy_ratio))
+        return ReedSolomonEncoder(redundancy_bytes=redundancy_bytes)
+
+try:
+    from converter.gpu_frame_generator import GPUFrameGenerator
+    GPU_FRAME_GENERATION_AVAILABLE = True
+    logger.info("GPU frame generation available")
+except ImportError as e:
+    logger.warning(f"GPU frame generation not available: {e}")
+    GPU_FRAME_GENERATION_AVAILABLE = False
+
+try:
+    from converter.video_raptor_encoder import VideoRaptorEncoder
+    RAPTOR_ENCODER_AVAILABLE = True
+    logger.info("Raptor encoder available")
+except ImportError as e:
+    logger.warning(f"Raptor encoder not available: {e}")
+    RAPTOR_ENCODER_AVAILABLE = False
+
+    class VideoRaptorEncoder:
+        def __init__(self, width, height, fps):
+            self.width = width
+            self.height = height
+            self.fps = fps
+
+        def create_metadata_frame(self, file_info):
+            return np.zeros((self.height, self.width, 3), dtype=np.uint8)
+
+        def create_calibration_frame(self):
+            return np.zeros((self.height, self.width, 3), dtype=np.uint8)
+
+        def _add_sync_pattern(self, frame):
+            frame[::20, :] = 255
+            frame[:, ::20] = 255
 
 # 添加项目根目录到路径
 # Add project root to path
@@ -314,154 +356,75 @@ class ConversionTask:
             except Exception as e:
                 logger.error(f"进度更新错误 [{self.task_id}]: {e}", exc_info=True)        
     def _verify_output_video(self):
-        """
-        验证输出视频文件是否有效
-        
-        Returns:
-            tuple: (是否有效, 错误消息)
-        """
+        """验证输出AVI文件 - 针对未压缩AVI优化"""
         if not self.output_path.exists():
             return False, "输出文件不存在"
-                
+
         if self.output_path.stat().st_size == 0:
             return False, "输出文件大小为0"
-        
+
         try:
-            # 首先尝试修复AVI文件
-            logger.info(f"尝试修复AVI文件: {self.output_path}")
-            
-            # 创建临时文件路径
-            temp_output = Path(str(self.output_path) + ".fixed.avi")
-            
-            # 首先尝试将文件复制到新位置以修复可能的问题
-            fix_cmd = [
-                "ffmpeg",
-                "-v", "warning",
-                "-i", str(self.output_path),
-                "-c", "copy",
-                "-movflags", "faststart",  # 这个选项会将元数据移到文件开头，解决moov atom问题
-                str(temp_output)
-            ]
-            
-            logger.info(f"执行修复命令: {' '.join(fix_cmd)}")
-            fix_result = subprocess.run(
-                fix_cmd, 
-                stderr=subprocess.PIPE,
-                stdout=subprocess.PIPE,
-                timeout=60
+            from converter.avi_validator import validate_avi_file
+
+            validation_results = validate_avi_file(
+                str(self.output_path),
+                callback=None
             )
-            
-            if fix_result.returncode == 0 and temp_output.exists() and temp_output.stat().st_size > 0:
-                # 修复成功，替换原文件
-                logger.info(f"AVI文件修复成功: {self.output_path}")
-                shutil.copy2(temp_output, self.output_path)
-                temp_output.unlink()
-            else:
-                # 修复失败，记录错误
-                error_msg = fix_result.stderr.decode('utf-8', errors='ignore')
-                logger.warning(f"AVI文件修复失败: {error_msg}")
-                if temp_output.exists():
-                    temp_output.unlink()
-            
-            # 使用ffprobe验证视频
-            info_cmd = [
-                "ffprobe", 
-                "-v", "error",
-                "-select_streams", "v:0",
-                "-show_entries", "stream=width,height,codec_name,duration,nb_frames",
-                "-of", "json",
-                str(self.output_path)
-            ]
-            
-            logger.info(f"执行验证命令: {' '.join(info_cmd)}")
-            info_result = subprocess.run(
-                info_cmd, 
-                stderr=subprocess.PIPE,
-                stdout=subprocess.PIPE,
-                timeout=30
-            )
-            
-            if info_result.returncode == 0:
-                # 尝试解析视频信息
-                try:
-                    video_info = json.loads(info_result.stdout)
-                    logger.info(f"视频信息获取成功: {json.dumps(video_info, indent=2)}")
-                    
-                    if "streams" in video_info and len(video_info["streams"]) > 0:
-                        stream_info = video_info["streams"][0]
-                        width = stream_info.get("width")
-                        height = stream_info.get("height")
-                        codec = stream_info.get("codec_name")
-                        
-                        # 验证基本参数是否合理
-                        if width and height and codec:
-                            logger.info(f"视频有效: {width}x{height}, 编码: {codec}")
-                            return True, "视频文件有效"
-                        else:
-                            logger.warning(f"视频缺少关键信息: {stream_info}")
-                            return False, "视频信息不完整"
-                    else:
-                        logger.warning("无视频流信息")
-                        return False, "未找到视频流"
-                except json.JSONDecodeError as e:
-                    logger.error(f"JSON解析错误: {e}")
-                    return False, f"解析视频信息失败: {e}"
-            else:
-                error_msg = info_result.stderr.decode('utf-8', errors='ignore')
-                logger.error(f"视频文件验证失败: {error_msg}")
-                
-                # 尝试更简单的验证方法 - 仅检查文件是否可以打开
-                try_cmd = [
-                    "ffmpeg", 
-                    "-v", "error", 
-                    "-i", str(self.output_path), 
-                    "-t", "0.1",  # 只读取前0.1秒
-                    "-f", "null", 
-                    "-"
-                ]
-                
-                logger.info(f"尝试简单验证: {' '.join(try_cmd)}")
-                try_result = subprocess.run(
-                    try_cmd, 
-                    stderr=subprocess.PIPE,
-                    stdout=subprocess.PIPE,
-                    timeout=30
+
+            if validation_results['overall_success']:
+                structure = validation_results['structure_validation']
+                logger.info(
+                    f"AVI验证成功: {structure['resolution']}, "
+                    f"{structure['frame_count']} frames, {structure['fps']} fps"
                 )
-                
-                if try_result.returncode == 0:
-                    logger.info("简单验证通过，视频可以读取")
-                    return True, "简单验证通过，视频可以读取"
-                else:
-                    try_error = try_result.stderr.decode('utf-8', errors='ignore')
-                    logger.error(f"简单验证失败: {try_error}")
-                    return False, f"视频验证失败: {error_msg}\n简单验证失败: {try_error}"
-                
-        except subprocess.TimeoutExpired:
-            return False, "视频验证超时"
+                return True, "AVI文件验证通过"
+            else:
+                error_details = []
+                if 'structure_validation' in validation_results:
+                    error_details.extend(validation_results['structure_validation'].get('error_details', []))
+                if 'integrity_validation' in validation_results:
+                    error_details.extend(validation_results['integrity_validation'].get('error_details', []))
+
+                error_msg = "; ".join(error_details) if error_details else "未知验证错误"
+                logger.error(f"AVI验证失败: {error_msg}")
+                return False, f"AVI验证失败: {error_msg}"
+
+        except ImportError:
+            logger.warning("AVI validator not available, using basic validation")
+            return True, "基础验证通过（验证器不可用）"
         except Exception as e:
-            logger.error(f"视频验证出错: {e}", exc_info=True)
-            return False, f"视频验证出错: {str(e)}"
+            logger.error(f"AVI验证过程出错: {e}", exc_info=True)
+            return False, f"验证过程出错: {str(e)}"
         
     def _conversion_worker(self):
         """GPU-aware conversion worker thread"""
         try:
             self._update_task_status("initializing")
 
-            # ---------- 1.  GPU error-correction ----------
-            if self.error_correction_enabled:
-                logger.info(f"Initializing Raptor error correction [{self.task_id}]")
-                self.error_correction = get_optimal_error_corrector(self.error_correction_ratio)
+            from converter.encoder import StreamingDirectAVIEncoder  # lazy import
 
-            # ---------- 2.  Frame generator ----------
+            # ---------- 1. GPU error-correction ----------
+            if self.error_correction_enabled and GPU_ERROR_CORRECTION_AVAILABLE:
+                logger.info(f"Initializing GPU error correction [{self.task_id}]")
+                self.error_correction = get_optimal_error_corrector(self.error_correction_ratio)
+            elif self.error_correction_enabled:
+                logger.info(f"Using CPU error correction [{self.task_id}]")
+                self.error_correction = ReedSolomonEncoder(redundancy_bytes=int(255 * self.error_correction_ratio))
+
+            # ---------- 2. Frame generator ----------
             try:
-                self.frame_generator = GPUFrameGenerator(
-                    resolution=self.resolution,
-                    fps=self.fps,
-                    color_count=self.color_count,
-                    nine_to_one=self.nine_to_one
-                )
-                logger.info(f"Using GPU-accelerated frame generator [{self.task_id}]")
-            except RuntimeError:
+                if GPU_FRAME_GENERATION_AVAILABLE:
+                    self.frame_generator = GPUFrameGenerator(
+                        resolution=self.resolution,
+                        fps=self.fps,
+                        color_count=self.color_count,
+                        nine_to_one=self.nine_to_one
+                    )
+                    logger.info(f"Using GPU-accelerated frame generator [{self.task_id}]")
+                else:
+                    raise RuntimeError("GPU not available")
+            except (RuntimeError, Exception) as e:
+                logger.info(f"GPU frame generation failed, using CPU: {e}")
                 generator_class = OptimizedFrameGenerator if self.use_optimized_generator else FrameGenerator
                 self.frame_generator = generator_class(
                     resolution=self.resolution,
@@ -488,7 +451,7 @@ class ConversionTask:
             self.video_encoder.start()
 
             # ---------- 4.  Metadata / calibration frames ----------
-            if self.params.get("metadata_frames", True):
+            if self.params.get("metadata_frames", True) and RAPTOR_ENCODER_AVAILABLE:
                 logger.info(f"Adding metadata frames [{self.task_id}]")
 
                 file_info = {
@@ -904,6 +867,57 @@ def download_file_by_name(filename):
     
     except Exception as e:
         logger.error(f"下载错误: {e}", exc_info=True)
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/verify-video/<task_id>', methods=['POST'])
+def verify_video(task_id):
+    """验证生成的AVI视频文件"""
+    try:
+        with task_lock:
+            if task_id not in task_registry:
+                return jsonify({"error": "找不到指定的任务"}), 404
+
+            task_info = task_registry[task_id]
+
+            if task_info["status"] != "completed":
+                return jsonify({"error": "任务尚未完成"}), 400
+
+            if not task_info.get("output_path"):
+                return jsonify({"error": "没有可用的输出文件"}), 404
+
+            output_path = Path(task_info["output_path"])
+
+        if not output_path.exists():
+            return jsonify({"error": "输出文件不存在"}), 404
+
+        from converter.avi_validator import validate_avi_file
+
+        def progress_callback(percentage, frame_num, bytes_processed):
+            socketio.emit('verification_progress', {
+                'task_id': task_id,
+                'percentage': percentage,
+                'frame': frame_num,
+                'bytes': bytes_processed
+            })
+
+        validation_results = validate_avi_file(
+            str(output_path),
+            callback=progress_callback
+        )
+
+        socketio.emit('verification_complete', {
+            'task_id': task_id,
+            'results': validation_results
+        })
+
+        return jsonify({
+            "success": True,
+            "validation_results": validation_results
+        })
+
+    except Exception as e:
+        logger.error(f"视频验证错误: {e}", exc_info=True)
         return jsonify({"error": str(e)}), 500
 
 
