@@ -21,43 +21,6 @@ from web_ui.server import run_server
 from converter.utils import is_nvenc_available, is_qsv_available
 
 
-def setup_enhanced_logging(level=logging.INFO):
-    """
-    Set up enhanced logging with file handler and more detailed formatting
-    """
-    # Create logs directory if it doesn't exist
-    log_dir = BASE_DIR / "logs"
-    log_dir.mkdir(exist_ok=True)
-    
-    # Create log file with timestamp
-    log_file = log_dir / f"app_{time.strftime('%Y%m%d_%H%M%S')}.log"
-    
-    # Configure log format
-    log_format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-    formatter = logging.Formatter(log_format)
-    
-    # Set up file handler
-    file_handler = logging.FileHandler(log_file)
-    file_handler.setFormatter(formatter)
-    
-    # Set up console handler with the same format
-    console_handler = logging.StreamHandler()
-    console_handler.setFormatter(formatter)
-    
-    # Configure root logger
-    root_logger = logging.getLogger()
-    root_logger.setLevel(level)
-    root_logger.handlers = []  # Remove any existing handlers
-    root_logger.addHandler(file_handler)
-    root_logger.addHandler(console_handler)
-    
-    # Log system information
-    logger = logging.getLogger(__name__)
-    logger.info(f"System: {sys.platform}")
-    logger.info(f"Python: {sys.version}")
-    logger.info(f"Log file: {log_file}")
-    
-    return log_file
 
 
 def check_dependencies():
@@ -195,8 +158,6 @@ def main():
     except Exception as e:
         logger.error(f"服务器运行错误: {e}", exc_info=True)
     
-    logger.info("文件到视频转换系统已关闭")
-# Add this to setup_enhanced_logging in main.py
 
 def setup_enhanced_logging(level=logging.INFO):
     """
