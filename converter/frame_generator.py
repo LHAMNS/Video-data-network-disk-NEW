@@ -266,10 +266,18 @@ class FrameGenerator:
             # 如果启用9合1，扩展逻辑帧
             if self.nine_to_one:
                 physical_frame = expand_pixels_9x1(
-                    logical_frame, 
-                    self.logical_width, 
+                    logical_frame,
+                    self.logical_width,
                     self.logical_height
                 )
+                # 确保输出尺寸与物理分辨率一致
+                if (physical_frame.shape[1] != self.physical_width or
+                        physical_frame.shape[0] != self.physical_height):
+                    corrected = np.zeros((self.physical_height, self.physical_width, 3), dtype=np.uint8)
+                    y_max = min(self.physical_height, physical_frame.shape[0])
+                    x_max = min(self.physical_width, physical_frame.shape[1])
+                    corrected[:y_max, :x_max] = physical_frame[:y_max, :x_max]
+                    physical_frame = corrected
             else:
                 physical_frame = logical_frame
             

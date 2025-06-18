@@ -237,6 +237,7 @@ class ConversionTask:
         """更新任务状态"""
         with task_lock:
             if self.task_id not in task_registry:
+                logger.warning(f"Task {self.task_id} not in registry during status update")
                 return
                 
             progress = task_registry[self.task_id]
@@ -309,7 +310,11 @@ class ConversionTask:
                         })
                 
                 # 发送进度更新
-                socketio.emit('progress_update', task_registry[self.task_id])
+                with task_lock:
+                    if self.task_id in task_registry:
+                        socketio.emit('progress_update', task_registry[self.task_id])
+                    else:
+                        logger.warning(f"Task {self.task_id} no longer in registry")
                 
             except Exception as e:
                 logger.error(f"进度更新错误 [{self.task_id}]: {e}", exc_info=True)        
@@ -659,6 +664,20 @@ def upload_file():
     file = request.files['file']
     if file.filename == '':
         return jsonify({"error": "未选择文件"}), 400
+
+    # 添加文件大小检查
+    file.seek(0, 2)
+    file_size = file.tell()
+    file.seek(0)
+
+    if file_size > app.config['MAX_CONTENT_LENGTH']:
+        return jsonify({"error": f"文件太大，最大支持 {app.config['MAX_CONTENT_LENGTH'] / (1024*1024*1024):.1f} GB"}), 400
+
+    # 添加文件扩展名白名单（可选）
+    allowed_extensions = {'.txt', '.pdf', '.doc', '.docx', '.zip', '.rar', '.7z', '.tar', '.gz'}
+    file_ext = Path(file.filename).suffix.lower()
+    if file_ext and file_ext not in allowed_extensions:
+        logger.warning(f"Unusual file extension uploaded: {file_ext}")
     
     # 创建临时文件
     temp_file_path = None
@@ -887,18 +906,27 @@ def download_file_by_task(task_id):
 def download_file_by_name(filename):
     """通过文件名下载文件"""
     try:
-        file_path = OUTPUT_DIR / filename
+        # 防止路径遍历
+        safe_filename = Path(filename).name
+        file_path = OUTPUT_DIR / safe_filename
+
+        # 确保文件在OUTPUT_DIR内
+        if not file_path.resolve().is_relative_to(OUTPUT_DIR.resolve()):
+            logger.error(f"Path traversal attempt: {filename}")
+            abort(403)
+
         if not file_path.exists():
             return jsonify({"error": "文件不存在"}), 404
-        
+
         # 获取MIME类型
         mime_type, _ = mimetypes.guess_type(file_path)
         if not mime_type:
             mime_type = 'video/x-msvideo'
-        
+
         return send_file(
-            file_path, 
+            file_path,
             as_attachment=True,
+            download_name=safe_filename,
             mimetype=mime_type
         )
     

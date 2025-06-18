@@ -85,12 +85,21 @@ class ReedSolomonEncoder:
         
         # 并行处理所有块
         with ThreadPoolExecutor(max_workers=self.num_workers) as executor:
-            # 提交所有任务
-            futures = [executor.submit(encode_chunk, i) for i in range(total_chunks)]
-            
-            # 等待所有任务完成
-            for future in futures:
-                future.result()
+            try:
+                # 提交所有任务
+                futures = [executor.submit(encode_chunk, i) for i in range(total_chunks)]
+
+                # 等待所有任务完成，捕获异常
+                for future in futures:
+                    try:
+                        future.result()
+                    except Exception as e:
+                        logger.error(f"Chunk encoding failed: {e}")
+                        raise
+            except Exception as e:
+                # 确保线程池关闭
+                executor.shutdown(wait=False)
+                raise
         
         return bytes(output_buffer)
     
