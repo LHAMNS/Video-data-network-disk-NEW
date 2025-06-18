@@ -117,29 +117,46 @@ class CacheManager:
         file_size = filepath.stat().st_size
         chunks = []
         
-        # 使用with语句确保文件被正确关闭
-        with open(filepath, 'rb') as src_file:
-            chunk_index = 0
-            while True:
-                data = src_file.read(self.chunk_size)
-                if not data:
-                    break
-                
-                chunk_hash = hashlib.md5(data).hexdigest()
-                chunk_path = self.cache_dir / f"{file_hash}_{chunk_index}.bin"
-                
-                # 使用with语句确保文件被正确关闭
-                with open(chunk_path, 'wb') as chunk_file:
-                    chunk_file.write(data)
-                
-                chunks.append({
-                    "index": chunk_index,
-                    "path": str(chunk_path.relative_to(self.cache_dir)),
-                    "size": len(data),
-                    "hash": chunk_hash
-                })
-                
-                chunk_index += 1
+        try:
+            with open(filepath, 'rb') as src_file:
+                chunk_index = 0
+                while True:
+                    data = src_file.read(self.chunk_size)
+                    if not data:
+                        break
+
+                    chunk_hash = hashlib.md5(data).hexdigest()
+                    chunk_path = self.cache_dir / f"{file_hash}_{chunk_index}.bin"
+
+                    try:
+                        with open(chunk_path, 'wb') as chunk_file:
+                            chunk_file.write(data)
+                    except IOError as e:
+                        # 清理已写入的块
+                        for chunk in chunks:
+                            try:
+                                Path(self.cache_dir / chunk["path"]).unlink()
+                            except Exception:
+                                pass
+                        raise IOError(f"Failed to write cache chunk: {e}")
+
+                    chunks.append({
+                        "index": chunk_index,
+                        "path": str(chunk_path.relative_to(self.cache_dir)),
+                        "size": len(data),
+                        "hash": chunk_hash
+                    })
+
+                    chunk_index += 1
+        except Exception as e:
+            logger.error(f"Cache file failed: {e}")
+            # 清理部分写入的文件
+            for chunk in chunks:
+                try:
+                    Path(self.cache_dir / chunk["path"]).unlink()
+                except Exception:
+                    pass
+            raise
         
         # 更新元数据
         self.metadata[file_hash] = {
