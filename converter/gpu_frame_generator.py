@@ -83,7 +83,16 @@ class GPUFrameGenerator:
     def _init_gpu_buffers(self):
         """Pre-allocate GPU memory buffers"""
         # Calculate buffer sizes
-        self.max_batch_frames = 30  # Process 30 frames at once
+        try:
+            available_memory = cp.cuda.Device().mem_info[0]
+            frame_size = self.physical_height * self.physical_width * 3
+            self.max_batch_frames = min(30, int(available_memory * 0.5 / frame_size))
+            self.max_batch_frames = max(1, self.max_batch_frames)
+        except Exception as e:
+            logger.warning(f"Failed to query GPU memory: {e}")
+            self.max_batch_frames = 30  # Fallback
+
+        logger.info(f"GPU batch size: {self.max_batch_frames} frames")
         
         # Input buffer for raw bytes
         self.d_input_buffer = cp.zeros(
