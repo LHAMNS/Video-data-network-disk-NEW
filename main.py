@@ -21,42 +21,46 @@ from web_ui.server import run_server
 from converter.utils import is_nvenc_available, is_qsv_available
 
 
-def setup_enhanced_logging(level=logging.INFO):
-    """
-    Set up enhanced logging with file handler and more detailed formatting
-    """
-    # Create logs directory if it doesn't exist
+def setup_enhanced_logging(level: int = logging.INFO) -> Path:
+    """Configure application logging with separate FFmpeg log file."""
     log_dir = BASE_DIR / "logs"
     log_dir.mkdir(exist_ok=True)
-    
-    # Create log file with timestamp
-    log_file = log_dir / f"app_{time.strftime('%Y%m%d_%H%M%S')}.log"
-    
-    # Configure log format
-    log_format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+    timestamp = time.strftime("%Y%m%d_%H%M%S")
+    log_file = log_dir / f"app_{timestamp}.log"
+    ffmpeg_file = log_dir / f"ffmpeg_{timestamp}.log"
+
+    log_format = (
+        "%(asctime)s - %(name)s - %(levelname)s - "
+        "[%(filename)s:%(lineno)d] - %(message)s"
+    )
     formatter = logging.Formatter(log_format)
-    
-    # Set up file handler
+
     file_handler = logging.FileHandler(log_file)
     file_handler.setFormatter(formatter)
-    
-    # Set up console handler with the same format
+    file_handler.setLevel(logging.DEBUG)
+
     console_handler = logging.StreamHandler()
     console_handler.setFormatter(formatter)
-    
-    # Configure root logger
+    console_handler.setLevel(level)
+
     root_logger = logging.getLogger()
-    root_logger.setLevel(level)
-    root_logger.handlers = []  # Remove any existing handlers
+    root_logger.setLevel(logging.DEBUG)
+    root_logger.handlers = []
     root_logger.addHandler(file_handler)
     root_logger.addHandler(console_handler)
-    
-    # Log system information
+
+    ffmpeg_logger = logging.getLogger("ffmpeg")
+    ffmpeg_logger.setLevel(logging.DEBUG)
+    ffmpeg_handler = logging.FileHandler(ffmpeg_file)
+    ffmpeg_handler.setFormatter(formatter)
+    ffmpeg_logger.addHandler(ffmpeg_handler)
+
     logger = logging.getLogger(__name__)
     logger.info(f"System: {sys.platform}")
     logger.info(f"Python: {sys.version}")
-    logger.info(f"Log file: {log_file}")
-    
+    logger.info(f"Log files: {log_file} and {ffmpeg_file}")
+
     return log_file
 
 
@@ -243,7 +247,64 @@ def setup_enhanced_logging(level=logging.INFO):
     logger.info(f"System: {sys.platform}")
     logger.info(f"Python: {sys.version}")
     logger.info(f"Log files: {log_file} and {ffmpeg_file}")
-    
+
     return log_file
+
+
+def main():
+    """主函数"""
+    parser = argparse.ArgumentParser(description="文件到视频转换系统")
+    parser.add_argument("--host", default="127.0.0.1",
+                        help="Web服务器主机地址 (默认: 127.0.0.1)")
+    parser.add_argument("--port", type=int, default=8080,
+                        help="Web服务器端口 (默认: 8080)")
+    parser.add_argument("--debug", action="store_true",
+                        help="启用调试模式")
+    parser.add_argument("--max-performance", action="store_true",
+                        help="启用最大性能模式 (使用最多系统资源)")
+    parser.add_argument("--threads", type=int,
+                        help="指定最大工作线程数")
+
+    args = parser.parse_args()
+
+    log_level = logging.DEBUG if args.debug else logging.INFO
+    setup_enhanced_logging(log_level)
+
+    logger = logging.getLogger(__name__)
+    logger.info("文件到视频转换系统启动")
+
+    if args.max_performance:
+        logger.info("启用最大性能模式")
+        os.environ["CONVERTER_MAX_PERFORMANCE"] = "1"
+
+    if args.threads:
+        logger.info(f"设置最大工作线程数: {args.threads}")
+        os.environ["CONVERTER_MAX_THREADS"] = str(args.threads)
+
+    if not check_dependencies():
+        sys.exit(1)
+
+    if not check_environment():
+        sys.exit(1)
+
+    try:
+        mp.set_start_method('spawn')
+    except RuntimeError:
+        pass
+
+    try:
+        logger.info(f"启动Web服务器: http://{args.host}:{args.port}")
+        print("\n文件到视频转换系统已启动!\n")
+        print(f"请使用浏览器访问: http://{args.host}:{args.port}\n")
+
+        run_server(host=args.host, port=args.port, debug=args.debug)
+    except KeyboardInterrupt:
+        logger.info("接收到中断信号，正在关闭服务器")
+    except Exception as e:
+        logger.error(f"服务器运行错误: {e}", exc_info=True)
+
+    logger.info("文件到视频转换系统已关闭")
+
+
 if __name__ == "__main__":
     main()

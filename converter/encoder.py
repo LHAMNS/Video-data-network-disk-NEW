@@ -144,10 +144,13 @@ class DirectAVIEncoder:
         
         try:
             if self.avi_writer:
-                self.avi_writer.close()
-                
+                try:
+                    self.avi_writer.close()
+                finally:
+                    self.avi_writer = None
+
             elapsed = time.time() - self.start_time
-            
+
             # Calculate statistics
             stats = {
                 "frames_written": self.frames_written,
