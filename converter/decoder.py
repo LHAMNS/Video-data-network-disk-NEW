@@ -197,14 +197,13 @@ class VideoDecoder:
         self.total_frames = self.frame_count
     
     def extract_data(self, callback=None):
-        """
-        开始数据提取过程
-        
+        """开始数据提取过程并将结果写入输出文件。
+
         Args:
-            callback: 回调函数，用于报告进度
-            
+            callback: 进度回调函数。
+
         Returns:
-            提取的数据
+            Path: 输出文件路径。
         """
         if self.running:
             logger.warning("解码器已在运行")
@@ -218,54 +217,41 @@ class VideoDecoder:
             if self.cap is None or not self.cap.isOpened():
                 self._open_video()
             
-            # 创建内存缓冲区存储所有提取的数据
-            all_data = bytearray()
-            
-            # 逐帧处理视频
-            self.processed_frames = 0
-            
-            while self.running and self.processed_frames < self.total_frames:
-                # 读取一帧
-                ret, frame = self.cap.read()
-                if not ret:
-                    break
-                
-                # 转换为RGB
-                frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                
-                # 提取帧数据
-                indices = extract_frame_data(
-                    frame_rgb, self.logical_width, self.logical_height, 
-                    self.nine_to_one, self.color_lut, self.color_count
-                )
-                
-                # 转换回字节
-                frame_bytes = indices_to_bytes(indices, self.color_count)
-                
-                # 追加到数据缓冲区
-                all_data.extend(frame_bytes)
-                
-                # 更新进度
-                self.processed_frames += 1
-                
-                # 调用回调函数
-                if callback and self.processed_frames % 10 == 0:
-                    elapsed = time.time() - self.start_time
-                    fps = self.processed_frames / elapsed if elapsed > 0 else 0
-                    callback(self.processed_frames, self.total_frames, fps)
-            
-            # 应用纠错解码（如果启用）
+            with open(self.output_path, 'wb') as out_file:
+                self.processed_frames = 0
+
+                while self.running and self.processed_frames < self.total_frames:
+                    ret, frame = self.cap.read()
+                    if not ret:
+                        break
+
+                    frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                    indices = extract_frame_data(
+                        frame_rgb, self.logical_width, self.logical_height,
+                        self.nine_to_one, self.color_lut, self.color_count
+                    )
+
+                    frame_bytes = indices_to_bytes(indices, self.color_count)
+                    out_file.write(frame_bytes)
+
+                    self.processed_frames += 1
+
+                    if callback and self.processed_frames % 10 == 0:
+                        elapsed = time.time() - self.start_time
+                        fps = self.processed_frames / elapsed if elapsed > 0 else 0
+                        callback(self.processed_frames, self.total_frames, fps)
+
             if self.use_error_correction and self.error_correction:
                 logger.info("应用纠错解码...")
-                all_data = self.error_correction.decode_data(bytes(all_data))
-            
-            # 写入输出文件
-            with open(self.output_path, 'wb') as f:
-                f.write(all_data)
-            
-            logger.info(f"数据提取完成，大小: {len(all_data)} 字节，已保存到: {self.output_path}")
-            
-            return all_data
+                with open(self.output_path, 'rb') as f:
+                    corrected = self.error_correction.decode_data(f.read())
+                with open(self.output_path, 'wb') as f:
+                    f.write(corrected)
+
+            output_size = self.output_path.stat().st_size if self.output_path.exists() else 0
+            logger.info(f"数据提取完成，大小: {output_size} 字节，已保存到: {self.output_path}")
+
+            return self.output_path
         
         finally:
             self.running = False
@@ -285,9 +271,9 @@ class VideoDecoder:
         """
         def worker():
             try:
-                data = self.extract_data(callback)
+                result_path = self.extract_data(callback)
                 if complete_callback:
-                    complete_callback(True, data, None)
+                    complete_callback(True, result_path, None)
             except Exception as e:
                 logger.error(f"数据提取错误: {e}", exc_info=True)
                 if complete_callback:

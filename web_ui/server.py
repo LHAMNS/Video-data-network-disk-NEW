@@ -5,6 +5,7 @@ Web UI server using Flask and Socket.IO for real-time communication
 
 from flask import Flask, render_template, request, jsonify, send_file, abort
 from flask_socketio import SocketIO, emit
+from werkzeug.utils import safe_join
 import os
 import json
 import time
@@ -906,19 +907,15 @@ def download_file_by_task(task_id):
 def download_file_by_name(filename):
     """通过文件名下载文件"""
     try:
-        # 防止路径遍历
-        safe_filename = Path(filename).name
-        file_path = OUTPUT_DIR / safe_filename
-
-        # 确保文件在OUTPUT_DIR内
-        if not file_path.resolve().is_relative_to(OUTPUT_DIR.resolve()):
+        file_path_str = safe_join(OUTPUT_DIR, filename)
+        if file_path_str is None:
             logger.error(f"Path traversal attempt: {filename}")
             abort(403)
 
+        file_path = Path(file_path_str)
         if not file_path.exists():
             return jsonify({"error": "文件不存在"}), 404
 
-        # 获取MIME类型
         mime_type, _ = mimetypes.guess_type(file_path)
         if not mime_type:
             mime_type = 'video/x-msvideo'
@@ -926,7 +923,7 @@ def download_file_by_name(filename):
         return send_file(
             file_path,
             as_attachment=True,
-            download_name=safe_filename,
+            download_name=file_path.name,
             mimetype=mime_type
         )
     
