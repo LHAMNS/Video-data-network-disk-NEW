@@ -4,12 +4,19 @@
 """
 
 import numpy as np
-from reedsolo import RSCodec
 import logging
 from numba import njit, prange
 import io
 from concurrent.futures import ThreadPoolExecutor
 import multiprocessing as mp
+
+# The `reedsolo` dependency is optional. Tests in this kata should still be
+# able to import the module even if the package is absent, so we attempt the
+# import lazily and handle the failure gracefully.
+try:  # pragma: no cover - behaviour depends on environment
+    from reedsolo import RSCodec  # type: ignore
+except ModuleNotFoundError:  # pragma: no cover
+    RSCodec = None  # type: ignore
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +35,12 @@ class ReedSolomonEncoder:
             redundancy_bytes: 每个块添加的冗余字节数
             chunk_size: 处理块大小（最大255）
         """
+        if RSCodec is None:
+            raise ImportError(
+                "reedsolo library is required for ReedSolomonEncoder. "
+                "Install `reedsolo` to enable error-correction features."
+            )
+
         # Reed-Solomon在GF(2^8)上工作，最大块大小为255
         self.chunk_size = min(255, chunk_size)
         self.data_bytes = self.chunk_size - redundancy_bytes
