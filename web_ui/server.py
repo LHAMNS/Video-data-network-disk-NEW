@@ -25,6 +25,8 @@ import numpy as np
 from converter.gpu_error_correction import get_optimal_error_corrector
 from converter.gpu_frame_generator import GPUFrameGenerator
 from converter.video_raptor_encoder import VideoRaptorEncoder
+from converter.decoder import VideoDecoder
+from converter.hardware import get_hardware_summary
 
 # 添加项目根目录到路径
 # Add project root to path
@@ -548,8 +550,17 @@ class ConversionTask:
             self._update_task_status("converting")
 
             # ---------- 7.  Frame generation & encoding ----------
+            # BGR fast path: generate frames directly in BGR format and tell
+            # the encoder to skip the per-frame RGB→BGR conversion.
+            # At 4K this saves ~25MB of memory copying per frame.
+            use_bgr = hasattr(self.frame_generator, 'generate_frame_bgr')
+            if use_bgr and hasattr(self.video_encoder, 'set_bgr_mode'):
+                self.video_encoder.set_bgr_mode(True)
+                logger.info(f"BGR fast path enabled [{self.task_id}]")
+
             for frame in self.frame_generator.generate_frames_from_data(
-                    data_source, callback=self._frame_generated_callback):
+                    data_source, callback=self._frame_generated_callback,
+                    bgr=use_bgr):
                 if not self.running:
                     logger.info(f"Frame generation interrupted [{self.task_id}]")
                     self._update_task_status("stopped")
@@ -610,6 +621,258 @@ class ConversionTask:
             self.event.set()
 
 
+# =====================================================================
+# Decode (video -> original file) support
+# =====================================================================
+
+DECODE_UPLOAD_DIR = ROOT_DIR / "decode_uploads"
+DECODE_OUTPUT_DIR = ROOT_DIR / "decode_output"
+
+for _dir in [DECODE_UPLOAD_DIR, DECODE_OUTPUT_DIR]:
+    _dir.mkdir(exist_ok=True)
+
+# Global registries for decode tasks (parallel to conversion_tasks / task_registry)
+decode_tasks = {}        # task_id -> DecodeTask
+decode_registry = {}     # task_id -> progress dict
+
+
+def create_decode_progress(task_id, video_filename):
+    """Create a decode task progress record."""
+    return {
+        "id": task_id,
+        "type": "decode",
+        "video_filename": video_filename,
+        "status": "idle",
+        "processed_frames": 0,
+        "total_frames": 0,
+        "fps": 0,
+        "eta": 0,
+        "start_time": 0,
+        "elapsed_time": 0,
+        "output_path": None,
+        "output_filename": None,
+        "output_size": 0,
+        "error_message": None,
+        "last_update": time.time(),
+    }
+
+
+class DecodeTask:
+    """
+    Decode task: restore an original file from an AVI video that was
+    previously produced by the encoding pipeline.
+    """
+
+    def __init__(self, video_path, task_id=None, params=None):
+        """
+        Args:
+            video_path: Path to the uploaded AVI video.
+            task_id:    Optional explicit task ID.
+            params:     Dict of decoding parameters (nine_to_one, color_count,
+                        use_error_correction).
+        """
+        self.video_path = Path(video_path)
+        self.task_id = task_id or str(uuid.uuid4())
+        self.params = params or {}
+        self.running = False
+        self.thread = None
+        self.decoder = None
+        self.start_time = 0
+        self.processed_frames = 0
+        self.total_frames = 0
+        self.event = threading.Event()
+
+        # Decode parameters (with sensible defaults matching the encoder)
+        self.nine_to_one = self.params.get("nine_to_one", True)
+        self.color_count = int(self.params.get("color_count", 16))
+        self.use_error_correction = self.params.get("use_error_correction", True)
+
+        # Derive output filename: strip the .avi extension added by the encoder
+        stem = self.video_path.stem
+        # Remove trailing timestamp suffix added during encoding (e.g. "_1700000000")
+        parts = stem.rsplit("_", 1)
+        if len(parts) == 2 and parts[1].isdigit():
+            original_stem = parts[0]
+        else:
+            original_stem = stem
+
+        self.output_path = DECODE_OUTPUT_DIR / f"{original_stem}_restored_{int(time.time())}"
+
+        if not self.video_path.exists():
+            raise FileNotFoundError(f"Video file not found: {self.video_path}")
+
+        logger.info(
+            f"DecodeTask created [{self.task_id}]: {self.video_path.name}, "
+            f"nine_to_one={self.nine_to_one}, colors={self.color_count}, "
+            f"error_correction={self.use_error_correction}"
+        )
+
+    # ----- public API -----
+
+    def start(self):
+        """Start the decode task in a background thread."""
+        if self.running:
+            logger.warning(f"DecodeTask [{self.task_id}] already running")
+            return False
+
+        self.running = True
+        self.start_time = time.time()
+        self.event.clear()
+
+        self.thread = threading.Thread(target=self._decode_worker, daemon=True)
+        self.thread.start()
+
+        logger.info(f"DecodeTask [{self.task_id}] started: {self.video_path.name}")
+        return True
+
+    def stop(self, timeout=30):
+        """Stop the decode task."""
+        if not self.running:
+            return True
+
+        logger.info(f"Stopping DecodeTask [{self.task_id}]...")
+        self.running = False
+
+        if self.decoder:
+            self.decoder.stop()
+
+        self.event.set()
+
+        if self.thread and self.thread.is_alive():
+            self.thread.join(timeout=timeout)
+            if self.thread.is_alive():
+                logger.warning(f"DecodeTask [{self.task_id}] thread did not stop in time")
+                return False
+
+        self._update_status("stopped")
+        return True
+
+    # ----- internal helpers -----
+
+    def _update_status(self, status, error_message=None, output_path=None):
+        """Update the task entry in decode_registry."""
+        with task_lock:
+            if self.task_id not in decode_registry:
+                return
+            progress = decode_registry[self.task_id]
+            progress["status"] = status
+            progress["processed_frames"] = self.processed_frames
+            progress["total_frames"] = self.total_frames
+            progress["elapsed_time"] = time.time() - self.start_time if self.start_time else 0
+            progress["last_update"] = time.time()
+            if error_message:
+                progress["error_message"] = error_message
+            if output_path:
+                progress["output_path"] = str(output_path)
+                progress["output_filename"] = Path(output_path).name
+                try:
+                    progress["output_size"] = Path(output_path).stat().st_size
+                except OSError:
+                    pass
+
+    def _progress_callback(self, processed, total, fps):
+        """Callback invoked by VideoDecoder during extraction."""
+        self.processed_frames = processed
+        self.total_frames = total
+
+        elapsed = time.time() - self.start_time if self.start_time else 0
+        eta = (total - processed) / fps if fps > 0 else 0
+
+        with task_lock:
+            if self.task_id in decode_registry:
+                decode_registry[self.task_id].update({
+                    "status": "decoding",
+                    "processed_frames": processed,
+                    "total_frames": total,
+                    "fps": round(fps, 2),
+                    "eta": round(eta, 2),
+                    "elapsed_time": round(elapsed, 2),
+                    "last_update": time.time(),
+                })
+
+        # Emit Socket.IO event so the frontend can show live progress
+        socketio.emit("decode_progress", {
+            "task_id": self.task_id,
+            "status": "decoding",
+            "processed_frames": processed,
+            "total_frames": total,
+            "fps": round(fps, 2),
+            "eta": round(eta, 2),
+            "elapsed_time": round(elapsed, 2),
+        })
+
+    def _decode_worker(self):
+        """Background worker that drives the VideoDecoder."""
+        try:
+            self._update_status("initializing")
+
+            # Instantiate the decoder from converter/decoder.py
+            self.decoder = VideoDecoder(
+                video_path=str(self.video_path),
+                output_path=str(self.output_path),
+                nine_to_one=self.nine_to_one,
+                color_count=self.color_count,
+                use_error_correction=self.use_error_correction,
+            )
+
+            self.total_frames = self.decoder.total_frames
+            with task_lock:
+                if self.task_id in decode_registry:
+                    decode_registry[self.task_id]["total_frames"] = self.total_frames
+
+            self._update_status("decoding")
+
+            # Run synchronous extraction with progress callback
+            data = self.decoder.extract_data(callback=self._progress_callback)
+
+            if not self.running:
+                self._update_status("stopped")
+                return
+
+            if data is None:
+                self._update_status("error", error_message="Decoder returned no data")
+                socketio.emit("decode_error", {
+                    "task_id": self.task_id,
+                    "error": "Decoder returned no data",
+                })
+                return
+
+            # Success
+            output_size = self.output_path.stat().st_size if self.output_path.exists() else len(data)
+            self._update_status("completed", output_path=str(self.output_path))
+
+            socketio.emit("decode_complete", {
+                "task_id": self.task_id,
+                "output_file": str(self.output_path),
+                "output_filename": self.output_path.name,
+                "output_size": output_size,
+                "duration": round(time.time() - self.start_time, 2),
+                "frames": self.processed_frames,
+            })
+
+            logger.info(
+                f"DecodeTask [{self.task_id}] completed: "
+                f"{self.output_path.name} ({output_size} bytes)"
+            )
+
+        except Exception as e:
+            error_msg = f"Decode error: {e}"
+            logger.error(f"{error_msg} [{self.task_id}]", exc_info=True)
+            self._update_status("error", error_message=error_msg)
+            socketio.emit("decode_error", {
+                "task_id": self.task_id,
+                "error": error_msg,
+            })
+
+        finally:
+            self.running = False
+            self.event.set()
+
+
+# =====================================================================
+# Routes
+# =====================================================================
+
 @app.route('/')
 def index():
     """主页"""
@@ -618,38 +881,22 @@ def index():
 
 @app.route('/api/hardware-info', methods=['GET'])
 def hardware_info():
-    """获取硬件信息"""
+    """获取完整硬件信息 (跨平台: Linux/Win/macOS, NVIDIA/AMD/Intel/Apple)"""
     try:
-        nvenc = is_nvenc_available()
-        qsv = is_qsv_available()
-        
-        # 获取系统信息
-        system_info = {
-            "cpu_count": os.cpu_count(),
-            "python_version": sys.version.split()[0],
-            "platform": sys.platform
-        }
-        
-        # 获取FFmpeg版本
+        hw = get_hardware_summary()
+
+        # Add FFmpeg version for convenience
         try:
             result = subprocess.run(
-                ["ffmpeg", "-version"], 
-                capture_output=True, 
-                text=True, 
-                timeout=5
+                ["ffmpeg", "-version"],
+                capture_output=True, text=True, timeout=5
             )
             if result.returncode == 0:
-                ffmpeg_version = result.stdout.split('\n')[0]
-                system_info["ffmpeg_version"] = ffmpeg_version
-        except Exception as e:
-            logger.warning(f"获取FFmpeg版本时出错: {e}")
-            system_info["ffmpeg_version"] = "未知"
-        
-        return jsonify({
-            "nvenc_available": nvenc,
-            "qsv_available": qsv,
-            "system_info": system_info
-        })
+                hw["ffmpeg_version"] = result.stdout.split('\n')[0]
+        except Exception:
+            hw["ffmpeg_version"] = "未安装"
+
+        return jsonify(hw)
     except Exception as e:
         logger.error(f"获取硬件信息时出错: {e}", exc_info=True)
         return jsonify({"error": str(e)}), 500
@@ -932,6 +1179,223 @@ def download_file_by_name(filename):
     
     except Exception as e:
         logger.error(f"下载错误: {e}", exc_info=True)
+        return jsonify({"error": str(e)}), 500
+
+
+# =====================================================================
+# Decode (video -> original file) API endpoints
+# =====================================================================
+
+@app.route('/api/upload-video', methods=['POST'])
+def upload_video_for_decode():
+    """
+    Upload an AVI video that was previously produced by the encoding pipeline.
+    The video is saved to DECODE_UPLOAD_DIR and a reference ID is returned so
+    the client can later call /api/start-decode.
+    """
+    if 'file' not in request.files:
+        return jsonify({"error": "No file part in the request"}), 400
+
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({"error": "No file selected"}), 400
+
+    # Basic extension check
+    file_ext = Path(file.filename).suffix.lower()
+    if file_ext not in ('.avi', '.AVI'):
+        return jsonify({"error": f"Unsupported file type '{file_ext}'. Only .avi files are accepted."}), 400
+
+    try:
+        # Generate a unique ID for this upload
+        upload_id = str(uuid.uuid4())
+        safe_name = Path(file.filename).name  # prevent path traversal
+        dest_dir = DECODE_UPLOAD_DIR / upload_id
+        dest_dir.mkdir(parents=True, exist_ok=True)
+        dest_path = dest_dir / safe_name
+
+        file.save(str(dest_path))
+        file_size = dest_path.stat().st_size
+
+        logger.info(
+            f"Video uploaded for decoding: {safe_name} "
+            f"({file_size / (1024 * 1024):.2f} MB), upload_id={upload_id}"
+        )
+
+        return jsonify({
+            "success": True,
+            "upload_id": upload_id,
+            "filename": safe_name,
+            "file_size": file_size,
+            "file_size_mb": round(file_size / (1024 * 1024), 2),
+            "video_path": str(dest_path),
+        })
+
+    except Exception as e:
+        logger.error(f"Video upload error: {e}", exc_info=True)
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/start-decode', methods=['POST'])
+def start_decode():
+    """
+    Start decoding a previously uploaded AVI video back to the original file.
+
+    Expected JSON body:
+        {
+            "upload_id":             "<from /api/upload-video>",
+            "nine_to_one":           true,       // optional, default true
+            "color_count":           16,          // optional, default 16
+            "use_error_correction":  true         // optional, default true
+        }
+    """
+    try:
+        data = request.json or {}
+        upload_id = data.get("upload_id")
+
+        if not upload_id:
+            return jsonify({"error": "Missing required field: upload_id"}), 400
+
+        # Locate the uploaded video
+        upload_dir = DECODE_UPLOAD_DIR / upload_id
+        if not upload_dir.exists() or not upload_dir.is_dir():
+            return jsonify({"error": f"Upload not found: {upload_id}"}), 404
+
+        # Find the video file inside the upload directory
+        video_files = list(upload_dir.glob("*.avi")) + list(upload_dir.glob("*.AVI"))
+        if not video_files:
+            return jsonify({"error": "No AVI file found for this upload"}), 404
+        video_path = video_files[0]
+
+        # Build decode params
+        params = {
+            "nine_to_one": data.get("nine_to_one", True),
+            "color_count": int(data.get("color_count", 16)),
+            "use_error_correction": data.get("use_error_correction", True),
+        }
+
+        task_id = str(uuid.uuid4())
+
+        # Create the DecodeTask
+        task = DecodeTask(video_path=video_path, task_id=task_id, params=params)
+
+        # Register progress record
+        with task_lock:
+            progress = create_decode_progress(task_id, video_path.name)
+            progress.update({
+                "status": "starting",
+                "total_frames": 0,
+                "start_time": time.time(),
+            })
+            decode_tasks[task_id] = task
+            decode_registry[task_id] = progress
+
+        # Start the background worker
+        success = task.start()
+
+        if not success:
+            with task_lock:
+                decode_tasks.pop(task_id, None)
+                decode_registry.pop(task_id, None)
+            return jsonify({"error": "Failed to start decode task"}), 500
+
+        return jsonify({
+            "success": True,
+            "task_id": task_id,
+            "task_info": {
+                "video_filename": video_path.name,
+                "nine_to_one": params["nine_to_one"],
+                "color_count": params["color_count"],
+                "use_error_correction": params["use_error_correction"],
+                "output_path": str(task.output_path),
+            },
+        })
+
+    except FileNotFoundError as e:
+        return jsonify({"error": str(e)}), 404
+    except Exception as e:
+        logger.error(f"Start decode error: {e}", exc_info=True)
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/decode-task/<task_id>', methods=['GET'])
+def get_decode_task_progress(task_id):
+    """Return the current progress of a decode task."""
+    with task_lock:
+        if task_id in decode_registry:
+            return jsonify(decode_registry[task_id])
+    return jsonify({"error": "Decode task not found"}), 404
+
+
+@app.route('/api/download-decoded/<task_id>', methods=['GET'])
+def download_decoded_file(task_id):
+    """Download the restored (decoded) file for a completed decode task."""
+    try:
+        with task_lock:
+            if task_id not in decode_registry:
+                return jsonify({"error": "Decode task not found"}), 404
+
+            info = decode_registry[task_id]
+
+            if info["status"] != "completed":
+                return jsonify({
+                    "error": f"Task is not completed (current status: {info['status']})"
+                }), 400
+
+            output_path_str = info.get("output_path")
+            if not output_path_str:
+                return jsonify({"error": "No output file available"}), 404
+
+            file_path = Path(output_path_str)
+
+        if not file_path.exists():
+            return jsonify({"error": "Output file no longer exists on disk"}), 404
+
+        # Determine a sensible download filename
+        download_name = file_path.name
+
+        # Try to guess MIME type; fall back to generic binary
+        mime_type, _ = mimetypes.guess_type(str(file_path))
+        if not mime_type:
+            mime_type = "application/octet-stream"
+
+        return send_file(
+            file_path,
+            as_attachment=True,
+            download_name=download_name,
+            mimetype=mime_type,
+        )
+
+    except Exception as e:
+        logger.error(f"Download decoded file error: {e}", exc_info=True)
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/decode-tasks', methods=['GET'])
+def get_all_decode_tasks():
+    """Return progress for all decode tasks."""
+    with task_lock:
+        return jsonify(list(decode_registry.values()))
+
+
+@app.route('/api/stop-decode', methods=['POST'])
+def stop_decode():
+    """Stop a running decode task."""
+    try:
+        data = request.json or {}
+        task_id = data.get("task_id")
+
+        if not task_id:
+            return jsonify({"error": "Missing required field: task_id"}), 400
+
+        with task_lock:
+            if task_id not in decode_tasks:
+                return jsonify({"error": "Decode task not found"}), 404
+            task = decode_tasks[task_id]
+
+        success = task.stop()
+        return jsonify({"success": success})
+    except Exception as e:
+        logger.error(f"Stop decode error: {e}", exc_info=True)
         return jsonify({"error": str(e)}), 500
 
 

@@ -309,156 +309,113 @@ class ParallelVideoDecoder(VideoDecoder):
     """
     并行视频解码器，使用多线程加速解码过程
     """
-    
+
     def __init__(self, *args, max_workers=None, **kwargs):
-        """
-        初始化并行视频解码器
-        
-        Args:
-            max_workers: 最大工作线程数
-            其他参数与VideoDecoder相同
-        """
         super().__init__(*args, **kwargs)
-        
-        # 设置工作线程数
+
         cpu_count = os.cpu_count()
         self.max_workers = max_workers or max(1, cpu_count - 1)
-        
-        # 每个线程处理的帧数
         self.frames_per_worker = 100
-    
+        # Shared lock for thread-safe progress updates
+        self._progress_lock = threading.Lock()
+
     def extract_data(self, callback=None):
         """
-        并行提取数据
-        
-        Args:
-            callback: 回调函数
-            
-        Returns:
-            提取的数据
+        并行提取数据 - truly parallel with ordered result assembly
         """
         if self.running:
             logger.warning("解码器已在运行")
             return
-        
+
         self.running = True
         self.start_time = time.time()
-        
+
         try:
-            # 确保视频已打开
             if self.cap is None or not self.cap.isOpened():
                 self._open_video()
-            
-            # 创建全局进度计数器
+
             self.processed_frames = 0
-            
-            # 创建内存缓冲区
-            all_data = bytearray()
-            
-            # 创建线程池
+
+            # Submit ALL batches up front for true parallelism
+            # Collect results in order afterwards
+            batch_ranges = []
+            for start_frame in range(0, self.total_frames, self.frames_per_worker):
+                end_frame = min(start_frame + self.frames_per_worker, self.total_frames)
+                batch_ranges.append((start_frame, end_frame))
+
+            # Submit all tasks at once
+            futures = []
             with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
-                # 分块处理帧
-                for start_frame in range(0, self.total_frames, self.frames_per_worker):
-                    end_frame = min(start_frame + self.frames_per_worker, self.total_frames)
-                    
-                    # 提交任务
+                for start_frame, end_frame in batch_ranges:
                     future = executor.submit(
-                        self._process_frame_batch, 
-                        start_frame, 
-                        end_frame, 
+                        self._process_frame_batch,
+                        start_frame,
+                        end_frame,
                         callback
                     )
-                    
-                    # 获取结果并追加到数据缓冲区
-                    batch_data = future.result()
-                    all_data.extend(batch_data)
-                    
-                    # 检查是否被中断
+                    futures.append(future)
+
+                # Collect results IN ORDER to maintain data integrity
+                all_data = bytearray()
+                for future in futures:
                     if not self.running:
                         break
-            
-            # 应用纠错解码（如果启用）
+                    batch_data = future.result()
+                    all_data.extend(batch_data)
+
             if self.use_error_correction and self.error_correction:
                 logger.info("应用纠错解码...")
                 all_data = self.error_correction.decode_data(bytes(all_data))
-            
-            # 写入输出文件
+
             with open(self.output_path, 'wb') as f:
                 f.write(all_data)
-            
+
             logger.info(f"数据提取完成，大小: {len(all_data)} 字节，已保存到: {self.output_path}")
-            
+
             return all_data
-        
+
         finally:
             self.running = False
-            
-            # 释放资源
             if self.cap:
                 self.cap.release()
                 self.cap = None
-    
+
     def _process_frame_batch(self, start_frame, end_frame, callback):
-        """
-        处理一批帧
-        
-        Args:
-            start_frame: 起始帧索引
-            end_frame: 结束帧索引
-            callback: 回调函数
-            
-        Returns:
-            这批帧提取的数据
-        """
-        # 创建一个新的视频捕获对象
+        """处理一批帧"""
+        # Each thread gets its own VideoCapture
         cap = cv2.VideoCapture(str(self.video_path))
-        
-        # 跳到起始帧
         cap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
-        
-        # 处理这一批帧
+
         batch_data = bytearray()
-        frame_count = 0
-        
-        for frame_idx in range(start_frame, end_frame):
-            # 读取一帧
-            ret, frame = cap.read()
-            if not ret:
-                break
-            
-            # 转换为RGB
-            frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            
-            # 提取帧数据
-            indices = extract_frame_data(
-                frame_rgb, self.logical_width, self.logical_height, 
-                self.nine_to_one, self.color_lut, self.color_count
-            )
-            
-            # 转换回字节
-            frame_bytes = indices_to_bytes(indices, self.color_count)
-            
-            # 追加到批处理数据
-            batch_data.extend(frame_bytes)
-            
-            # 更新计数
-            frame_count += 1
-            
-            # 更新全局进度
-            with threading.Lock():
-                self.processed_frames += 1
-                
-                # 调用回调函数
-                if callback and self.processed_frames % 10 == 0:
-                    elapsed = time.time() - self.start_time
-                    fps = self.processed_frames / elapsed if elapsed > 0 else 0
-                    callback(self.processed_frames, self.total_frames, fps)
-            
-            # 检查是否被中断
-            if not self.running:
-                break
-        
-        # 释放资源
-        cap.release()
-        
+
+        try:
+            for frame_idx in range(start_frame, end_frame):
+                ret, frame = cap.read()
+                if not ret:
+                    break
+
+                frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+                indices = extract_frame_data(
+                    frame_rgb, self.logical_width, self.logical_height,
+                    self.nine_to_one, self.color_lut, self.color_count
+                )
+
+                frame_bytes = indices_to_bytes(indices, self.color_count)
+                batch_data.extend(frame_bytes)
+
+                # Use the SHARED lock for thread-safe progress updates
+                with self._progress_lock:
+                    self.processed_frames += 1
+
+                    if callback and self.processed_frames % 10 == 0:
+                        elapsed = time.time() - self.start_time
+                        fps = self.processed_frames / elapsed if elapsed > 0 else 0
+                        callback(self.processed_frames, self.total_frames, fps)
+
+                if not self.running:
+                    break
+        finally:
+            cap.release()
+
         return batch_data

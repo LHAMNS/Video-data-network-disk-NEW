@@ -199,18 +199,26 @@ class CacheManager:
     def _calculate_file_hash(self, filepath):
         """计算文件哈希值"""
         hasher = hashlib.md5()
+        filepath = Path(filepath)
+        file_size = filepath.stat().st_size
+        hasher.update(f"{file_size}".encode())
+
         with open(filepath, 'rb') as f:
-            # 读取文件头和尾部来计算哈希，对大文件更高效
             head = f.read(8192)
-            f.seek(-8192, 2)
-            tail = f.read(8192)
-            
-            # 组合文件大小、头部和尾部计算哈希
-            file_size = filepath.stat().st_size
-            hasher.update(f"{file_size}".encode())
             hasher.update(head)
-            hasher.update(tail)
-        
+
+            # Only read tail separately if the file is large enough
+            # to avoid overlapping with head data
+            if file_size > 8192 * 2:
+                f.seek(-8192, 2)
+                tail = f.read(8192)
+                hasher.update(tail)
+            elif file_size > 8192:
+                # File between 8KB and 16KB: read remaining portion
+                tail = f.read()
+                hasher.update(tail)
+            # For files <= 8KB, head already contains all data
+
         return hasher.hexdigest()
 
 # 检测NVIDIA硬件编码器是否可用

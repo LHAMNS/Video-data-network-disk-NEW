@@ -21,7 +21,7 @@ OUTPUT_DIR = ROOT_DIR / "output"
 CACHE_DIR.mkdir(exist_ok=True)
 OUTPUT_DIR.mkdir(exist_ok=True)
 
-# 预定义的16色调色板 (精心设计以在压缩后保持区分度)
+# 预定义的16色调色板 RGB格式 (精心设计以在压缩后保持区分度)
 COLOR_PALETTE_16 = [
     (0, 0, 0),       # 黑
     (255, 255, 255), # 白
@@ -39,6 +39,11 @@ COLOR_PALETTE_16 = [
     (128, 0, 128),   # 紫
     (128, 128, 128), # 灰
     (255, 128, 0),   # 橙
+]
+
+# BGR格式调色板 (用于AVI直接写入，避免每帧RGB→BGR转换)
+COLOR_PALETTE_16_BGR = [
+    (b, g, r) for (r, g, b) in COLOR_PALETTE_16
 ]
 
 # 视频参数预设

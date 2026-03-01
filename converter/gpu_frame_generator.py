@@ -276,17 +276,19 @@ class GPUFrameGenerator:
         cp.cuda.Stream.null.synchronize()
         return self.d_rgb_frames[:num_frames].get()
     
-    def generate_frames_from_data(self, data: bytes, 
-                                 callback: Optional[Callable] = None) -> Iterator[np.ndarray]:
+    def generate_frames_from_data(self, data: bytes,
+                                 callback: Optional[Callable] = None,
+                                 bgr: bool = False) -> Iterator[np.ndarray]:
         """
         Generate frames from data with GPU acceleration
-        
+
         Args:
             data: Input byte data
             callback: Progress callback function
-            
+            bgr: If True, yield BGR frames instead of RGB
+
         Yields:
-            RGB frames as numpy arrays
+            RGB (or BGR if bgr=True) frames as numpy arrays
         """
         total_bytes = len(data)
         total_frames = (total_bytes + self.bytes_per_frame - 1) // self.bytes_per_frame
@@ -314,11 +316,16 @@ class GPUFrameGenerator:
             # Yield individual frames
             for i in range(batch_frames):
                 frame = rgb_frames[i]
+
+                # Convert RGB to BGR if requested
+                if bgr:
+                    frame = frame[:, :, ::-1].copy()
+
                 frames_processed += 1
-                
+
                 if callback:
                     callback(frames_processed - 1, total_frames, frame)
-                
+
                 yield frame
         
         logger.info(f"GPU frame generation complete: {frames_processed} frames")

@@ -13,6 +13,14 @@ class AppState {
         this.downloadUrl = null;
         this.fileInfo = null;
         this.verificationInProgress = false;
+
+        // Decode state
+        this.decodeFileId = null;
+        this.decodeTaskId = null;
+        this.isDecoding = false;
+        this.decodeDownloadUrl = null;
+        this.decodeFileInfo = null;
+        this.activeMode = 'encode'; // 'encode' | 'decode'
     }
 }
 
@@ -70,7 +78,47 @@ const elements = {
     
     // Status
     gpuStatus: document.getElementById('gpu-status'),
-    throughput: document.getElementById('throughput')
+    throughput: document.getElementById('throughput'),
+
+    // Mode tabs
+    tabEncode: document.getElementById('tab-encode'),
+    tabDecode: document.getElementById('tab-decode'),
+    panelEncode: document.getElementById('panel-encode'),
+    panelDecode: document.getElementById('panel-decode'),
+
+    // Decode elements
+    decodeFileInput: document.getElementById('decode-file-input'),
+    decodeDropZone: document.getElementById('decode-drop-zone'),
+    decodeBrowseBtn: document.getElementById('decode-browse-btn'),
+    decodePreviewCanvas: document.getElementById('decode-preview-canvas'),
+
+    decodeFileInfo: document.getElementById('decode-file-info'),
+    decodeFileName: document.getElementById('decode-file-name'),
+    decodeFileSize: document.getElementById('decode-file-size'),
+    decodeTotalFrames: document.getElementById('decode-total-frames'),
+    decodeResolution: document.getElementById('decode-resolution'),
+    decodeEstimatedOutput: document.getElementById('decode-estimated-output'),
+
+    decodeResolutionBtns: document.querySelectorAll('[data-decode-resolution]'),
+    decodeColorBtns: document.querySelectorAll('[data-decode-colors]'),
+    decodeErrorCorrection: document.getElementById('decode-error-correction'),
+    decodeGpuAcceleration: document.getElementById('decode-gpu-acceleration'),
+
+    decodeProgressBar: document.getElementById('decode-progress-bar'),
+    decodeProgressPercentage: document.getElementById('decode-progress-percentage'),
+    decodeFramesInfo: document.getElementById('decode-frames-info'),
+    decodeTimeRemaining: document.getElementById('decode-time-remaining'),
+    decodeFpsInfo: document.getElementById('decode-fps-info'),
+
+    decodeStartBtn: document.getElementById('decode-start-btn'),
+    decodeStopBtn: document.getElementById('decode-stop-btn'),
+    decodeDownloadBtn: document.getElementById('decode-download-btn'),
+    decodeDownloadBtnSide: document.getElementById('decode-download-btn-side'),
+
+    decodeResultSection: document.getElementById('decode-result-section'),
+    decodeResultTitle: document.getElementById('decode-result-title'),
+    decodeResultMessage: document.getElementById('decode-result-message'),
+    decodeResultDetails: document.getElementById('decode-result-details')
 };
 
 // Initialize application
@@ -79,6 +127,9 @@ function initApp() {
     setupEventHandlers();
     checkHardwareCapabilities();
     setupDragAndDrop();
+    setupModeTabs();
+    setupDecodeHandlers();
+    setupDecodeDragAndDrop();
 }
 
 // Socket.IO setup
@@ -105,6 +156,19 @@ function setupSocketIO() {
     
     state.socket.on('conversion_error', (data) => {
         handleConversionError(data);
+    });
+
+    // Decode socket events
+    state.socket.on('decode_progress', (data) => {
+        updateDecodeProgress(data);
+    });
+
+    state.socket.on('decode_complete', (data) => {
+        handleDecodeComplete(data);
+    });
+
+    state.socket.on('decode_error', (data) => {
+        handleDecodeError(data);
     });
 }
 
@@ -518,6 +582,379 @@ function showToast(message, type = 'info') {
     setTimeout(() => {
         toast.remove();
     }, 5000);
+}
+
+// ==================== Mode Tab Switching ====================
+function setupModeTabs() {
+    elements.tabEncode.addEventListener('click', () => switchMode('encode'));
+    elements.tabDecode.addEventListener('click', () => switchMode('decode'));
+}
+
+function switchMode(mode) {
+    state.activeMode = mode;
+
+    // Update tab buttons
+    elements.tabEncode.classList.toggle('active', mode === 'encode');
+    elements.tabDecode.classList.toggle('active', mode === 'decode');
+
+    // Update panels
+    elements.panelEncode.classList.toggle('active', mode === 'encode');
+    elements.panelDecode.classList.toggle('active', mode === 'decode');
+}
+
+// ==================== Decode Handlers ====================
+function setupDecodeHandlers() {
+    // File input change
+    elements.decodeFileInput.addEventListener('change', handleDecodeFileSelect);
+
+    // Browse button in the drop zone
+    if (elements.decodeBrowseBtn) {
+        elements.decodeBrowseBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            elements.decodeFileInput.click();
+        });
+    }
+
+    // Resolution buttons for decode
+    elements.decodeResolutionBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            elements.decodeResolutionBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        });
+    });
+
+    // Color count buttons for decode
+    elements.decodeColorBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            elements.decodeColorBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        });
+    });
+
+    // Action buttons
+    elements.decodeStartBtn.addEventListener('click', startDecode);
+    elements.decodeStopBtn.addEventListener('click', stopDecode);
+
+    if (elements.decodeDownloadBtn) {
+        elements.decodeDownloadBtn.addEventListener('click', downloadDecoded);
+    }
+    if (elements.decodeDownloadBtnSide) {
+        elements.decodeDownloadBtnSide.addEventListener('click', downloadDecoded);
+    }
+}
+
+// ==================== Decode Drag and Drop ====================
+function setupDecodeDragAndDrop() {
+    const dz = elements.decodeDropZone;
+    if (!dz) return;
+
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dz.addEventListener(eventName, preventDefaults, false);
+    });
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dz.addEventListener(eventName, () => dz.classList.add('active'), false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dz.addEventListener(eventName, () => dz.classList.remove('active'), false);
+    });
+
+    dz.addEventListener('drop', handleDecodeDrop);
+    dz.addEventListener('click', () => elements.decodeFileInput.click());
+}
+
+function handleDecodeDrop(e) {
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+        const file = files[0];
+        if (!file.name.toLowerCase().endsWith('.avi')) {
+            showToast('请选择 AVI 格式的视频文件', 'error');
+            return;
+        }
+        elements.decodeFileInput.files = files;
+        handleDecodeFileSelect();
+    }
+}
+
+// ==================== Decode File Selection & Upload ====================
+function handleDecodeFileSelect() {
+    const file = elements.decodeFileInput.files[0];
+    if (!file) return;
+
+    if (!file.name.toLowerCase().endsWith('.avi')) {
+        showToast('请选择 AVI 格式的视频文件 / Please select an AVI file', 'error');
+        return;
+    }
+
+    uploadVideoForDecode(file);
+}
+
+async function uploadVideoForDecode(file) {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    showToast('正在上传视频文件... Uploading video...', 'info');
+
+    try {
+        const response = await fetch('/api/upload-video', {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            state.decodeFileId = result.file_id;
+            state.decodeFileInfo = result.file_info || {};
+            displayDecodeFileInfo(result);
+            showDecodeFileLoaded(file.name);
+            elements.decodeStartBtn.disabled = false;
+            showToast('视频上传成功 Video uploaded successfully', 'success');
+        } else {
+            showToast(`上传失败: ${result.error}`, 'error');
+        }
+    } catch (error) {
+        console.error('Decode upload error:', error);
+        showToast('上传失败: 网络错误 Upload failed: Network error', 'error');
+    }
+}
+
+function displayDecodeFileInfo(data) {
+    const fileInfo = data.file_info || {};
+    const videoInfo = data.video_info || {};
+
+    elements.decodeFileName.textContent = fileInfo.filename || '-';
+    elements.decodeFileSize.textContent = fileInfo.size ? formatFileSize(fileInfo.size) : '-';
+    elements.decodeTotalFrames.textContent = videoInfo.total_frames ? formatNumber(videoInfo.total_frames) : '-';
+    elements.decodeResolution.textContent = videoInfo.resolution || '-';
+    elements.decodeEstimatedOutput.textContent = videoInfo.estimated_output_size
+        ? formatFileSize(videoInfo.estimated_output_size) : '-';
+
+    elements.decodeFileInfo.style.display = 'block';
+}
+
+function showDecodeFileLoaded(filename) {
+    const dz = elements.decodeDropZone;
+    if (!dz) return;
+
+    dz.innerHTML = `
+        <div class="decode-file-loaded">
+            <i class="fas fa-file-video"></i>
+            <h4>${escapeHtml(filename)}</h4>
+            <p>文件已就绪，可以开始还原 / File ready for restore</p>
+            <button class="btn-primary-gradient" onclick="elements.decodeFileInput.click(); event.stopPropagation();">
+                <i class="fas fa-exchange-alt"></i> 更换文件 Change File
+            </button>
+        </div>
+    `;
+}
+
+// ==================== Start / Stop Decode ====================
+async function startDecode() {
+    if (!state.decodeFileId || state.isDecoding) return;
+
+    const params = getDecodeParams();
+
+    try {
+        const response = await fetch('/api/start-decode', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                file_id: state.decodeFileId,
+                params: params
+            })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            state.decodeTaskId = result.task_id;
+            state.isDecoding = true;
+            updateUIForDecoding();
+            showToast('开始还原... Starting restore...', 'info');
+        } else {
+            showToast(`还原启动失败: ${result.error}`, 'error');
+        }
+    } catch (error) {
+        console.error('Start decode error:', error);
+        showToast('还原启动失败: 网络错误', 'error');
+    }
+}
+
+async function stopDecode() {
+    if (!state.isDecoding) return;
+
+    try {
+        const response = await fetch('/api/stop-decode', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ task_id: state.decodeTaskId })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            state.isDecoding = false;
+            updateUIForDecodeStopped();
+            showToast('还原已停止 Restore stopped', 'warning');
+        } else {
+            showToast(`停止失败: ${result.error}`, 'error');
+        }
+    } catch (error) {
+        console.error('Stop decode error:', error);
+        showToast('停止失败: 网络错误', 'error');
+    }
+}
+
+function getDecodeParams() {
+    const activeRes = document.querySelector('[data-decode-resolution].active');
+    const activeColors = document.querySelector('[data-decode-colors].active');
+
+    return {
+        resolution: activeRes ? activeRes.dataset.decodeResolution : '4K',
+        color_count: activeColors ? parseInt(activeColors.dataset.decodeColors) : 16,
+        error_correction: elements.decodeErrorCorrection.checked,
+        gpu_acceleration: elements.decodeGpuAcceleration.checked
+    };
+}
+
+// ==================== Decode Progress ====================
+function updateDecodeProgress(data) {
+    const totalFrames = data.total_frames || 1;
+    const processedFrames = data.processed_frames || 0;
+    const progress = Math.min(100, (processedFrames / totalFrames) * 100);
+
+    elements.decodeProgressBar.style.width = `${progress}%`;
+    elements.decodeProgressBar.classList.add('processing');
+    elements.decodeProgressPercentage.textContent = `${progress.toFixed(1)}%`;
+    elements.decodeFramesInfo.textContent = `${formatNumber(processedFrames)} / ${formatNumber(totalFrames)} 帧`;
+
+    if (data.fps !== undefined) {
+        elements.decodeFpsInfo.textContent = `${data.fps.toFixed(1)} FPS`;
+    }
+
+    if (data.eta > 0) {
+        elements.decodeTimeRemaining.textContent = formatDuration(data.eta);
+    }
+
+    // If server sends a preview frame
+    if (data.preview_image && elements.decodePreviewCanvas) {
+        const canvas = elements.decodePreviewCanvas;
+        const ctx = canvas.getContext('2d');
+        const img = new Image();
+        img.onload = () => {
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+            canvas.style.display = 'block';
+        };
+        img.src = `data:image/jpeg;base64,${data.preview_image}`;
+    }
+}
+
+function handleDecodeComplete(data) {
+    state.isDecoding = false;
+    state.decodeDownloadUrl = `/api/download-decoded/${state.decodeTaskId}`;
+
+    elements.decodeProgressBar.classList.remove('processing');
+    elements.decodeProgressBar.style.width = '100%';
+    elements.decodeProgressPercentage.textContent = '100%';
+
+    updateUIForDecodeComplete();
+    showDecodeResult(data);
+    showToast('还原完成! 文件已成功还原 / Restore complete!', 'success');
+}
+
+function handleDecodeError(data) {
+    state.isDecoding = false;
+    elements.decodeProgressBar.classList.remove('processing');
+    updateUIForDecodeStopped();
+    showToast(`还原错误: ${data.error}`, 'error');
+}
+
+// ==================== Decode UI State Management ====================
+function updateUIForDecoding() {
+    elements.decodeStartBtn.disabled = true;
+    elements.decodeStopBtn.disabled = false;
+    if (elements.decodeDownloadBtn) elements.decodeDownloadBtn.disabled = true;
+    if (elements.decodeDownloadBtnSide) elements.decodeDownloadBtnSide.disabled = true;
+    elements.decodeFileInput.disabled = true;
+    elements.decodeResultSection.style.display = 'none';
+}
+
+function updateUIForDecodeStopped() {
+    elements.decodeStartBtn.disabled = false;
+    elements.decodeStopBtn.disabled = true;
+    if (elements.decodeDownloadBtn) elements.decodeDownloadBtn.disabled = true;
+    if (elements.decodeDownloadBtnSide) elements.decodeDownloadBtnSide.disabled = true;
+    elements.decodeFileInput.disabled = false;
+}
+
+function updateUIForDecodeComplete() {
+    elements.decodeStartBtn.disabled = false;
+    elements.decodeStopBtn.disabled = true;
+    if (elements.decodeDownloadBtn) elements.decodeDownloadBtn.disabled = false;
+    if (elements.decodeDownloadBtnSide) elements.decodeDownloadBtnSide.disabled = false;
+    elements.decodeFileInput.disabled = false;
+}
+
+function showDecodeResult(data) {
+    elements.decodeResultSection.style.display = 'block';
+
+    const info = data || {};
+    elements.decodeResultTitle.textContent = '文件已成功还原';
+    elements.decodeResultMessage.textContent = 'File has been successfully restored';
+
+    const outputSize = info.output_size ? formatFileSize(info.output_size) : '-';
+    const totalFrames = info.total_frames ? formatNumber(info.total_frames) : '-';
+    const duration = info.duration ? formatDuration(info.duration) : '-';
+    const filename = info.output_filename || 'restored_file';
+
+    elements.decodeResultDetails.innerHTML = `
+        <div class="detail-item">
+            <span class="detail-label">还原文件 Output</span>
+            <span class="detail-value">${escapeHtml(filename)}</span>
+        </div>
+        <div class="detail-item">
+            <span class="detail-label">文件大小 Size</span>
+            <span class="detail-value">${outputSize}</span>
+        </div>
+        <div class="detail-item">
+            <span class="detail-label">总帧数 Frames</span>
+            <span class="detail-value">${totalFrames}</span>
+        </div>
+        <div class="detail-item">
+            <span class="detail-label">耗时 Duration</span>
+            <span class="detail-value">${duration}</span>
+        </div>
+    `;
+
+    // Scroll to the result section
+    elements.decodeResultSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+// ==================== Decode Download ====================
+function downloadDecoded() {
+    if (!state.decodeDownloadUrl) {
+        showToast('没有可下载的文件 No file available for download', 'warning');
+        return;
+    }
+
+    try {
+        window.location.href = state.decodeDownloadUrl;
+        showToast('开始下载还原文件... Downloading restored file...', 'info');
+    } catch (error) {
+        console.error('Decode download error:', error);
+        showToast('下载失败 Download failed', 'error');
+    }
+}
+
+// ==================== Utility: Escape HTML ====================
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.appendChild(document.createTextNode(text));
+    return div.innerHTML;
 }
 
 // Initialize on DOM load

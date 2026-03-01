@@ -38,8 +38,23 @@
             </div>
         </nav>
 
+        <!-- 模式切换标签 Mode Tabs -->
+        <div class="mode-tabs glass-effect">
+            <button class="mode-tab active" data-mode="encode" id="tab-encode">
+                <i class="fas fa-file-video"></i>
+                <span class="tab-label">编码视频 <small>Encode</small></span>
+            </button>
+            <button class="mode-tab" data-mode="decode" id="tab-decode">
+                <i class="fas fa-undo-alt"></i>
+                <span class="tab-label">还原视频 <small>Restore</small></span>
+            </button>
+        </div>
+
         <!-- 主内容区 -->
         <div class="content-wrapper">
+
+            <!-- ==================== 编码模式 Encode Mode ==================== -->
+            <div class="mode-panel active" id="panel-encode">
             <div class="row g-4">
                 <!-- 左侧预览区 -->
                 <div class="col-lg-8">
@@ -239,6 +254,178 @@
                     </div>
                 </div>
             </div>
+            </div> <!-- /panel-encode -->
+
+            <!-- ==================== 还原模式 Decode / Restore Mode ==================== -->
+            <div class="mode-panel" id="panel-decode">
+            <div class="row g-4">
+                <!-- 左侧：还原预览与进度 -->
+                <div class="col-lg-8">
+                    <div class="preview-section glass-effect">
+                        <div class="section-header">
+                            <h3><i class="fas fa-film"></i> 视频还原 <small class="text-muted-label">Video Restore</small></h3>
+                        </div>
+
+                        <!-- 上传拖拽区 -->
+                        <div class="preview-container" id="decode-preview-container">
+                            <div class="drop-zone" id="decode-drop-zone">
+                                <div class="drop-zone-content">
+                                    <i class="fas fa-file-video drop-icon"></i>
+                                    <h4>拖拽 AVI 视频到此处</h4>
+                                    <p>Drop your encoded AVI file here, or click to browse</p>
+                                    <button class="btn-primary-gradient" id="decode-browse-btn">
+                                        <i class="fas fa-folder-open"></i> 选择 AVI 文件
+                                    </button>
+                                </div>
+                            </div>
+                            <canvas id="decode-preview-canvas" class="preview-canvas" style="display: none;"></canvas>
+                        </div>
+
+                        <!-- 还原进度 Decode Progress -->
+                        <div class="progress-section">
+                            <div class="progress-header">
+                                <span class="progress-label">还原进度 <small>Decode Progress</small></span>
+                                <span class="progress-percentage" id="decode-progress-percentage">0%</span>
+                            </div>
+                            <div class="progress-bar-wrapper">
+                                <div class="progress-bar-fill decode-bar" id="decode-progress-bar"></div>
+                            </div>
+                            <div class="progress-stats">
+                                <div class="stat">
+                                    <i class="fas fa-film"></i>
+                                    <span id="decode-frames-info">0 / 0 帧</span>
+                                </div>
+                                <div class="stat">
+                                    <i class="fas fa-clock"></i>
+                                    <span id="decode-time-remaining">--:--:--</span>
+                                </div>
+                                <div class="stat">
+                                    <i class="fas fa-bolt"></i>
+                                    <span id="decode-fps-info">0 FPS</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 还原结果区 -->
+                    <div class="decode-result-section glass-effect mt-4" id="decode-result-section" style="display: none;">
+                        <div class="section-header">
+                            <h3><i class="fas fa-check-double"></i> 还原完成 <small class="text-muted-label">Restore Complete</small></h3>
+                        </div>
+                        <div class="decode-result-content">
+                            <div class="decode-result-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <h4 id="decode-result-title">文件已成功还原</h4>
+                            <p id="decode-result-message" class="text-muted-label">File has been successfully restored</p>
+                            <div class="decode-result-details" id="decode-result-details"></div>
+                            <button class="btn-action btn-download decode-download-ready" id="decode-download-btn" disabled>
+                                <i class="fas fa-download"></i> 下载还原文件 <small>Download Restored File</small>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右侧：还原控制面板 -->
+                <div class="col-lg-4">
+                    <!-- 视频文件信息 -->
+                    <div class="control-section glass-effect">
+                        <h4><i class="fas fa-info-circle"></i> 视频信息 <small class="text-muted-label">Video Info</small></h4>
+                        <div class="file-input-wrapper">
+                            <input type="file" id="decode-file-input" class="file-input" accept=".avi">
+                            <label for="decode-file-input" class="file-input-label">
+                                <i class="fas fa-upload"></i>
+                                <span>选择 AVI 文件 <small>Select AVI</small></span>
+                            </label>
+                        </div>
+
+                        <div class="file-info" id="decode-file-info" style="display: none;">
+                            <div class="info-item">
+                                <span class="info-label">文件名:</span>
+                                <span class="info-value" id="decode-file-name">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">大小 Size:</span>
+                                <span class="info-value" id="decode-file-size">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">总帧数 Frames:</span>
+                                <span class="info-value" id="decode-total-frames">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">分辨率 Resolution:</span>
+                                <span class="info-value" id="decode-resolution">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">预计还原大小:</span>
+                                <span class="info-value" id="decode-estimated-output">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 还原设置 Decode Settings -->
+                    <div class="control-section glass-effect">
+                        <h4><i class="fas fa-sliders-h"></i> 还原设置 <small class="text-muted-label">Decode Settings</small></h4>
+
+                        <div class="setting-group">
+                            <label>分辨率 Resolution</label>
+                            <div class="btn-group-custom">
+                                <button class="btn-option active" data-decode-resolution="4K">4K</button>
+                                <button class="btn-option" data-decode-resolution="1080p">1080p</button>
+                                <button class="btn-option" data-decode-resolution="720p">720p</button>
+                            </div>
+                            <p class="setting-hint">需与编码时的分辨率一致 <small>Must match encode resolution</small></p>
+                        </div>
+
+                        <div class="setting-group">
+                            <label>色彩数量 Color Count</label>
+                            <div class="btn-group-custom">
+                                <button class="btn-option" data-decode-colors="4">4</button>
+                                <button class="btn-option" data-decode-colors="8">8</button>
+                                <button class="btn-option active" data-decode-colors="16">16</button>
+                            </div>
+                            <p class="setting-hint">需与编码时设置一致 <small>Must match encode settings</small></p>
+                        </div>
+
+                        <div class="setting-group">
+                            <label>纠错选项 Error Correction</label>
+                            <div class="toggle-wrapper">
+                                <label class="toggle">
+                                    <input type="checkbox" id="decode-error-correction" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                                <span>启用纠错解码 <small>Enable EC decode</small></span>
+                            </div>
+                        </div>
+
+                        <div class="setting-group">
+                            <label>性能选项 Performance</label>
+                            <div class="toggle-wrapper">
+                                <label class="toggle">
+                                    <input type="checkbox" id="decode-gpu-acceleration" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                                <span>GPU 加速 <small>GPU Acceleration</small></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 操作按钮 Action Buttons -->
+                    <div class="control-section glass-effect">
+                        <button class="btn-action btn-decode-start" id="decode-start-btn" disabled>
+                            <i class="fas fa-play"></i> 开始还原 <small>Start Restore</small>
+                        </button>
+                        <button class="btn-action btn-stop" id="decode-stop-btn" disabled>
+                            <i class="fas fa-stop"></i> 停止还原 <small>Stop</small>
+                        </button>
+                        <button class="btn-action btn-download" id="decode-download-btn-side" disabled>
+                            <i class="fas fa-download"></i> 下载还原文件 <small>Download</small>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            </div> <!-- /panel-decode -->
+
         </div>
     </div>
 

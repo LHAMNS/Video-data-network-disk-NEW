@@ -12,14 +12,16 @@ import logging
 import time
 import base64
 import cv2
-from . import COLOR_PALETTE_16
+from . import COLOR_PALETTE_16, COLOR_PALETTE_16_BGR
 from .utils import expand_pixels_9x1, bytes_to_color_indices
 
 logger = logging.getLogger(__name__)
 
-# 将16色调色板转换为NumPy数组，便于快速访问
-# Convert 16-color palette to NumPy array for fast access
+# RGB palette array for standard frame generation and preview
 COLOR_PALETTE_16_ARRAY = np.array(COLOR_PALETTE_16, dtype=np.uint8)
+
+# BGR palette array for direct AVI writing (avoids per-frame RGB→BGR conversion)
+COLOR_PALETTE_16_BGR_ARRAY = np.array(COLOR_PALETTE_16_BGR, dtype=np.uint8)
 
 @njit(fastmath=True)
 def generate_color_lut(palette, color_count):
@@ -132,7 +134,7 @@ class FrameGenerator:
     def __init__(self, resolution="4K", fps=30, color_count=16, nine_to_one=True):
         """
         初始化帧生成器
-        
+
         Args:
             resolution: 分辨率 ("4K", "1080p", "720p")
             fps: 帧率
@@ -140,48 +142,49 @@ class FrameGenerator:
             nine_to_one: 是否使用9合1像素合并
         """
         from . import VIDEO_PRESETS
-        
+
         # 输入参数验证
         if color_count not in (16, 256):
             logger.warning(f"不支持的颜色数量 {color_count}，将使用默认值 16")
             color_count = 16
-            
+
         if resolution not in VIDEO_PRESETS:
             logger.warning(f"不支持的分辨率 {resolution}，将使用默认值 4K")
             resolution = "4K"
-        
+
         # 存储参数
         self.resolution_name = resolution
         self.resolution = VIDEO_PRESETS.get(resolution, VIDEO_PRESETS["4K"])
         self.fps = max(1, min(fps, 120))  # 限制在合理范围内
         self.color_count = color_count
         self.nine_to_one = nine_to_one
-        
+
         # 计算物理和逻辑分辨率
         self.physical_width = self.resolution["width"]
         self.physical_height = self.resolution["height"]
-        
+
         if nine_to_one:
             self.logical_width = self.physical_width // 3
             self.logical_height = self.physical_height // 3
         else:
             self.logical_width = self.physical_width
             self.logical_height = self.physical_height
-        
-        # 生成颜色查找表
+
+        # 生成颜色查找表 (RGB and BGR)
         self.color_lut = generate_color_lut(COLOR_PALETTE_16_ARRAY, color_count)
-        
+        self.color_lut_bgr = generate_color_lut(COLOR_PALETTE_16_BGR_ARRAY, color_count)
+
         # 计算每帧可存储的字节数
         bits_per_pixel = 4 if color_count == 16 else 8
         self.bytes_per_frame = self.logical_width * self.logical_height * bits_per_pixel // 8
-        
+
         # 创建边框模式，用于小数据块的展示
         self.border_pattern = create_border_pattern(
-            self.logical_width, 
+            self.logical_width,
             self.logical_height,
             border_width=max(5, min(20, self.logical_width // 30))
         )
-        
+
         logger.info(f"帧生成器初始化: {resolution}, {fps}fps, {color_count}色, " +
                   f"9合1={nine_to_one}, 每帧容量={self.bytes_per_frame}字节")
     
@@ -293,6 +296,76 @@ class FrameGenerator:
             error_frame[:, :, 0] = 255  # 红色通道设为最大
             return error_frame
     
+    def generate_frame_bgr(self, data_chunk, frame_index=0):
+        """
+        生成单个BGR视频帧 (用于直接AVI写入，避免RGB→BGR转换)
+
+        Args:
+            data_chunk: 二进制数据块
+            frame_index: 帧索引
+
+        Returns:
+            BGR帧数组，形状为(height, width, 3)
+        """
+        start_time = time.time()
+
+        try:
+            color_indices = bytes_to_color_indices(data_chunk, self.color_count)
+            indices_needed = self.logical_width * self.logical_height
+            use_border = len(color_indices) < indices_needed * 0.1
+
+            if len(color_indices) < indices_needed:
+                if use_border:
+                    padded_indices = np.copy(self.border_pattern)
+                    if len(color_indices) > 0:
+                        data_side = max(1, int(np.sqrt(len(color_indices))))
+                        start_x = (self.logical_width - data_side) // 2
+                        start_y = (self.logical_height - data_side) // 2
+                        start_x = max(0, min(start_x, self.logical_width - 1))
+                        start_y = max(0, min(start_y, self.logical_height - 1))
+                        for i in range(min(len(color_indices), data_side * data_side)):
+                            y = start_y + (i // data_side)
+                            x = start_x + (i % data_side)
+                            if 0 <= y < self.logical_height and 0 <= x < self.logical_width:
+                                padded_indices[y * self.logical_width + x] = color_indices[i]
+                else:
+                    padded_indices = np.zeros(indices_needed, dtype=np.uint8)
+                    padded_indices[:len(color_indices)] = color_indices
+                color_indices = padded_indices
+
+            # Generate logical frame using BGR LUT directly
+            logical_frame = generate_frame_array(
+                color_indices[:indices_needed],
+                self.logical_width,
+                self.logical_height,
+                self.color_lut_bgr
+            )
+
+            if self.nine_to_one:
+                physical_frame = expand_pixels_9x1(
+                    logical_frame, self.logical_width, self.logical_height
+                )
+                if (physical_frame.shape[1] != self.physical_width or
+                        physical_frame.shape[0] != self.physical_height):
+                    corrected = np.zeros((self.physical_height, self.physical_width, 3), dtype=np.uint8)
+                    y_max = min(self.physical_height, physical_frame.shape[0])
+                    x_max = min(self.physical_width, physical_frame.shape[1])
+                    corrected[:y_max, :x_max] = physical_frame[:y_max, :x_max]
+                    physical_frame = corrected
+            else:
+                physical_frame = logical_frame
+
+            elapsed = time.time() - start_time
+            logger.debug(f"帧 {frame_index} BGR生成完成，用时 {elapsed:.4f}s")
+
+            return physical_frame
+
+        except Exception as e:
+            logger.error(f"生成BGR帧 {frame_index} 时出错: {e}", exc_info=True)
+            error_frame = np.zeros((self.physical_height, self.physical_width, 3), dtype=np.uint8)
+            error_frame[:, :, 2] = 255  # Red in BGR = channel 2
+            return error_frame
+
     def generate_preview_image(self, frame, max_size=300):
         """
         生成用于UI预览的小图像
@@ -338,86 +411,74 @@ class FrameGenerator:
             _, jpeg_data = cv2.imencode('.jpg', empty_frame)
             return base64.b64encode(jpeg_data).decode('utf-8')
     
-    def generate_frames_from_data(self, data, callback=None):
+    def generate_frames_from_data(self, data, callback=None, bgr=False):
         """
         从数据生成帧的生成器
-        
+
         Args:
             data: 字节数据或可迭代的数据块
             callback: 回调函数，用于报告进度，参数为(帧索引，总帧数，当前帧)
-            
+            bgr: 如果为True，直接生成BGR帧（用于AVI写入，避免RGB→BGR转换）
+
         Yields:
             生成的视频帧
         """
         frame_count = 0
-        
+        gen_func = self.generate_frame_bgr if bgr else self.generate_frame
+
         try:
-            # 处理单个字节对象
             if isinstance(data, (bytes, bytearray)):
-                # 计算总帧数
                 total_bytes = len(data)
                 total_frames = self.estimate_frame_count(total_bytes)
-                
-                logger.info(f"开始生成帧，数据大小: {total_bytes} 字节，预计 {total_frames} 帧")
-                
+
+                logger.info(f"开始生成帧，数据大小: {total_bytes} 字节，预计 {total_frames} 帧, BGR={bgr}")
+
                 for frame_idx in range(total_frames):
-                    # 计算当前块的起始和结束位置
                     start_pos = frame_idx * self.bytes_per_frame
                     end_pos = min(start_pos + self.bytes_per_frame, total_bytes)
-                    
-                    # 获取当前数据块
                     current_chunk = data[start_pos:end_pos]
-                    
-                    # 生成帧
-                    frame = self.generate_frame(current_chunk, frame_idx)
+
+                    frame = gen_func(current_chunk, frame_idx)
                     frame_count += 1
-                    
-                    # 调用回调函数
+
                     if callback:
                         try:
                             callback(frame_idx, total_frames, frame)
                         except Exception as e:
                             logger.error(f"帧回调函数出错: {e}")
-                    
+
                     yield frame
-                    
+
                 logger.info(f"帧生成完成，共 {frame_count} 帧")
-                
-            # 处理可迭代对象
+
             else:
-                logger.info("开始从迭代器生成帧")
-                
+                logger.info(f"开始从迭代器生成帧, BGR={bgr}")
+
                 for frame_idx, chunk in enumerate(data):
-                    # 生成帧
-                    frame = self.generate_frame(chunk, frame_idx)
+                    frame = gen_func(chunk, frame_idx)
                     frame_count += 1
-                    
-                    # 调用回调函数
+
                     if callback:
                         try:
                             callback(frame_idx, None, frame)
                         except Exception as e:
                             logger.error(f"帧回调函数出错: {e}")
-                    
+
                     yield frame
-                    
-                    # 定期日志记录
+
                     if frame_idx % 100 == 0:
                         logger.info(f"已生成 {frame_idx + 1} 帧")
-                
+
                 logger.info(f"从迭代器生成帧完成，共 {frame_count} 帧")
-                
+
         except Exception as e:
             logger.error(f"生成帧时出错: {e}", exc_info=True)
-            # 生成错误指示帧
             error_frame = np.zeros((self.physical_height, self.physical_width, 3), dtype=np.uint8)
-            error_frame[:, :, 0] = 255  # 红色通道设为最大
-            
-            # 如果已经生成了一些帧，只需返回错误帧
+            error_frame[:, :, 0] = 255
+
             if frame_count > 0:
                 yield error_frame
             else:
-                # 如果还没生成任何帧，生成至少一帧
                 if callback:
                     try:
                         callback(0, 1, error_frame)
@@ -458,66 +519,70 @@ class OptimizedFrameGenerator(FrameGenerator):
             )
         return self._border_indices
     
-    def generate_frame_optimized(self, data_chunk, frame_index=0):
+    def generate_frame_optimized(self, data_chunk, frame_index=0, bgr=False):
         """
         优化版本的帧生成函数，使用预分配缓冲区
-        
+
         Args:
             data_chunk: 二进制数据块
             frame_index: 帧索引
-            
+            bgr: 如果为True，使用BGR颜色查找表（用于直接AVI写入）
+
         Returns:
             生成的帧数组的视图（不复制数据）
         """
         try:
             # 将数据转换为颜色索引
             color_indices = bytes_to_color_indices(data_chunk, self.color_count)
-            
+
             # 填充逻辑帧缓冲区
             indices_needed = self.logical_width * self.logical_height
-            
+
             # 数据量很小时使用边框模式
             use_border = len(color_indices) < indices_needed * 0.1
-            
+
             if len(color_indices) < indices_needed:
                 if use_border:
                     # 使用边框模式
                     border_indices = self._prepare_border_indices()
                     indices_to_use = np.copy(border_indices)
-                    
+
                     # 将实际数据放在中心
                     if len(color_indices) > 0:
                         # 估计数据适合的平方区域大小
                         data_side = max(1, int(np.sqrt(len(color_indices))))
                         start_x = (self.logical_width - data_side) // 2
                         start_y = (self.logical_height - data_side) // 2
-                        
+
                         # 确保起始点在有效范围内
                         start_x = max(0, min(start_x, self.logical_width - 1))
                         start_y = max(0, min(start_y, self.logical_height - 1))
-                        
+
                         # 填充数据
                         for i in range(min(len(color_indices), data_side * data_side)):
                             y = start_y + (i // data_side)
                             x = start_x + (i % data_side)
                             if 0 <= y < self.logical_height and 0 <= x < self.logical_width:
                                 indices_to_use[y * self.logical_width + x] = color_indices[i]
-                                
+
                     color_indices = indices_to_use
                 else:
                     # 填充数组
                     color_indices = np.pad(color_indices, (0, indices_needed - len(color_indices)))
-            
+
+            # 选择RGB或BGR颜色查找表
+            lut = self.color_lut_bgr if bgr else self.color_lut
+
             # 使用向量化操作填充逻辑帧
             pixel_count = min(indices_needed, len(color_indices))
             y_coords = np.arange(pixel_count) // self.logical_width
             x_coords = np.arange(pixel_count) % self.logical_width
-            
+
             # 防止颜色索引越界
-            valid_indices = np.clip(color_indices[:pixel_count], 0, len(self.color_lut) - 1)
-            
+            valid_indices = np.clip(color_indices[:pixel_count], 0, len(lut) - 1)
+
             # 直接从LUT获取颜色并填充
-            self.logical_frame_buffer[y_coords, x_coords] = self.color_lut[valid_indices]
+            self.logical_frame_buffer[y_coords, x_coords] = lut[valid_indices]
             
             # 如果启用9合1，使用优化的扩展方法
             if self.nine_to_one:
@@ -535,23 +600,106 @@ class OptimizedFrameGenerator(FrameGenerator):
         except Exception as e:
             logger.error(f"优化帧生成时出错: {e}", exc_info=True)
             # 返回错误指示帧（全红）
+            red_channel = 2 if bgr else 0  # Red is channel 2 in BGR, channel 0 in RGB
             if self.nine_to_one:
                 self.physical_frame_buffer.fill(0)
-                self.physical_frame_buffer[:, :, 0] = 255
+                self.physical_frame_buffer[:, :, red_channel] = 255
                 return self.physical_frame_buffer
             else:
                 self.logical_frame_buffer.fill(0)
-                self.logical_frame_buffer[:, :, 0] = 255
+                self.logical_frame_buffer[:, :, red_channel] = 255
                 return self.logical_frame_buffer
     
-    def process_large_file(self, data_generator, progress_callback=None):
+    def generate_frames_from_data(self, data, callback=None, bgr=False):
+        """
+        从数据生成帧的生成器（优化版本，使用预分配缓冲区）
+
+        Args:
+            data: 字节数据或可迭代的数据块
+            callback: 回调函数，用于报告进度，参数为(帧索引，总帧数，当前帧)
+            bgr: 如果为True，直接生成BGR帧（用于AVI写入，避免RGB→BGR转换）
+
+        Yields:
+            生成的视频帧
+        """
+        frame_count = 0
+
+        try:
+            if isinstance(data, (bytes, bytearray)):
+                total_bytes = len(data)
+                total_frames = self.estimate_frame_count(total_bytes)
+
+                logger.info(f"[优化] 开始生成帧，数据大小: {total_bytes} 字节，预计 {total_frames} 帧, BGR={bgr}")
+
+                for frame_idx in range(total_frames):
+                    start_pos = frame_idx * self.bytes_per_frame
+                    end_pos = min(start_pos + self.bytes_per_frame, total_bytes)
+                    current_chunk = data[start_pos:end_pos]
+
+                    frame = self.generate_frame_optimized(current_chunk, frame_idx, bgr=bgr)
+                    # Return a copy since optimized version reuses buffers
+                    frame = frame.copy()
+                    frame_count += 1
+
+                    if callback:
+                        try:
+                            callback(frame_idx, total_frames, frame)
+                        except Exception as e:
+                            logger.error(f"帧回调函数出错: {e}")
+
+                    yield frame
+
+                logger.info(f"[优化] 帧生成完成，共 {frame_count} 帧")
+
+            else:
+                logger.info(f"[优化] 开始从迭代器生成帧, BGR={bgr}")
+
+                for frame_idx, chunk in enumerate(data):
+                    frame = self.generate_frame_optimized(chunk, frame_idx, bgr=bgr)
+                    # Return a copy since optimized version reuses buffers
+                    frame = frame.copy()
+                    frame_count += 1
+
+                    if callback:
+                        try:
+                            callback(frame_idx, None, frame)
+                        except Exception as e:
+                            logger.error(f"帧回调函数出错: {e}")
+
+                    yield frame
+
+                    if frame_idx % 100 == 0:
+                        logger.info(f"[优化] 已生成 {frame_idx + 1} 帧")
+
+                logger.info(f"[优化] 从迭代器生成帧完成，共 {frame_count} 帧")
+
+        except Exception as e:
+            logger.error(f"[优化] 生成帧时出错: {e}", exc_info=True)
+            error_frame = np.zeros((self.physical_height, self.physical_width, 3), dtype=np.uint8)
+            if bgr:
+                error_frame[:, :, 2] = 255  # Red in BGR = channel 2
+            else:
+                error_frame[:, :, 0] = 255  # Red in RGB = channel 0
+
+            if frame_count > 0:
+                yield error_frame
+            else:
+                if callback:
+                    try:
+                        callback(0, 1, error_frame)
+                    except:
+                        pass
+                yield error_frame
+
+    def process_large_file(self, data_generator, progress_callback=None, bgr=False):
         """
         处理大文件的特殊优化方法
-        
+
         Args:
             data_generator: 数据块生成器
             progress_callback: 进度回调函数
-            
+            bgr: 如果为True，直接生成BGR帧（用于AVI写入，避免RGB→BGR转换）
+
         Yields:
             生成的视频帧
         """
@@ -561,7 +709,7 @@ class OptimizedFrameGenerator(FrameGenerator):
         start_time = time.time()
         
         try:
-            logger.info("开始优化处理大文件...")
+            logger.info(f"开始优化处理大文件... BGR={bgr}")
             
             for chunk in data_generator:
                 # 添加到缓冲区
@@ -576,7 +724,7 @@ class OptimizedFrameGenerator(FrameGenerator):
                     buffer = buffer[self.bytes_per_frame:]
                     
                     # 生成帧
-                    frame = self.generate_frame_optimized(frame_data, frame_idx)
+                    frame = self.generate_frame_optimized(frame_data, frame_idx, bgr=bgr)
                     
                     # 提供进度信息
                     if progress_callback:
@@ -597,7 +745,7 @@ class OptimizedFrameGenerator(FrameGenerator):
             
             # 处理剩余数据
             if buffer:
-                frame = self.generate_frame_optimized(buffer, frame_idx)
+                frame = self.generate_frame_optimized(buffer, frame_idx, bgr=bgr)
                 
                 if progress_callback:
                     try:
@@ -616,7 +764,10 @@ class OptimizedFrameGenerator(FrameGenerator):
             logger.error(f"处理大文件时出错: {e}", exc_info=True)
             # 返回错误指示帧
             error_frame = np.zeros((self.physical_height, self.physical_width, 3), dtype=np.uint8)
-            error_frame[:, :, 0] = 255  # 红色
+            if bgr:
+                error_frame[:, :, 2] = 255  # Red in BGR = channel 2
+            else:
+                error_frame[:, :, 0] = 255  # Red in RGB = channel 0
             
             # 如果已经生成了一些帧，只需返回错误帧
             if frame_idx > 0:
