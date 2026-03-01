@@ -23,40 +23,44 @@ from converter.utils import is_nvenc_available, is_qsv_available
 
 def setup_enhanced_logging(level=logging.INFO):
     """
-    Set up enhanced logging with file handler and more detailed formatting
+    Set up enhanced logging with file and console handlers.
+    File handler always logs at DEBUG; console uses the requested level.
     """
-    # Create logs directory if it doesn't exist
     log_dir = BASE_DIR / "logs"
     log_dir.mkdir(exist_ok=True)
-    
-    # Create log file with timestamp
+
     log_file = log_dir / f"app_{time.strftime('%Y%m%d_%H%M%S')}.log"
-    
-    # Configure log format
-    log_format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+    log_format = "%(asctime)s - %(name)s - %(levelname)s - [%(filename)s:%(lineno)d] - %(message)s"
     formatter = logging.Formatter(log_format)
-    
-    # Set up file handler
+
     file_handler = logging.FileHandler(log_file)
     file_handler.setFormatter(formatter)
-    
-    # Set up console handler with the same format
+    file_handler.setLevel(logging.DEBUG)
+
     console_handler = logging.StreamHandler()
     console_handler.setFormatter(formatter)
-    
-    # Configure root logger
+    console_handler.setLevel(level)
+
     root_logger = logging.getLogger()
-    root_logger.setLevel(level)
-    root_logger.handlers = []  # Remove any existing handlers
+    root_logger.setLevel(logging.DEBUG)
+    root_logger.handlers = []
     root_logger.addHandler(file_handler)
     root_logger.addHandler(console_handler)
-    
-    # Log system information
+
+    # Separate FFmpeg log file
+    ffmpeg_logger = logging.getLogger('ffmpeg')
+    ffmpeg_logger.setLevel(logging.DEBUG)
+    ffmpeg_file = log_dir / f"ffmpeg_{time.strftime('%Y%m%d_%H%M%S')}.log"
+    ffmpeg_handler = logging.FileHandler(ffmpeg_file)
+    ffmpeg_handler.setFormatter(formatter)
+    ffmpeg_logger.addHandler(ffmpeg_handler)
+
     logger = logging.getLogger(__name__)
     logger.info(f"System: {sys.platform}")
     logger.info(f"Python: {sys.version}")
-    logger.info(f"Log file: {log_file}")
-    
+    logger.info(f"Log files: {log_file} and {ffmpeg_file}")
+
     return log_file
 
 
@@ -68,9 +72,9 @@ def check_dependencies():
     
     # 检查ffmpeg
     try:
-        subprocess.run(["ffmpeg", "-version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
+        subprocess.run(["ffmpeg", "-version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True, timeout=10)
         logger.info("FFmpeg 已安装")
-    except (subprocess.CalledProcessError, FileNotFoundError):
+    except (subprocess.CalledProcessError, FileNotFoundError, OSError, subprocess.TimeoutExpired):
         logger.error("FFmpeg 未安装或无法运行，请安装 FFmpeg 后再运行本程序")
         return False
     
@@ -121,8 +125,6 @@ def check_environment():
     
     return True
 
-# Replace the conflicted section in main.py with this corrected version:
-
 def main():
     """主函数"""
     parser = argparse.ArgumentParser(description="文件到视频转换系统")
@@ -131,8 +133,9 @@ def main():
         help="Web服务器主机地址 (默认: 127.0.0.1)"
     )
     parser.add_argument(
-        "--port", type=int, default=8080, 
-        help="Web服务器端口 (默认: 8080)"
+        "--port", type=int, default=8080, choices=range(1, 65536),
+        metavar="PORT",
+        help="Web服务器端口 (默认: 8080, 范围: 1-65535)"
     )
     parser.add_argument(
         "--debug", action="store_true", 
@@ -196,54 +199,7 @@ def main():
         logger.error(f"服务器运行错误: {e}", exc_info=True)
     
     logger.info("文件到视频转换系统已关闭")
-# Add this to setup_enhanced_logging in main.py
 
-def setup_enhanced_logging(level=logging.INFO):
-    """
-    Set up enhanced logging with file handler and more detailed formatting
-    """
-    # Create logs directory if it doesn't exist
-    log_dir = BASE_DIR / "logs"
-    log_dir.mkdir(exist_ok=True)
-    
-    # Create log file with timestamp
-    log_file = log_dir / f"app_{time.strftime('%Y%m%d_%H%M%S')}.log"
-    
-    # Configure log format with more details
-    log_format = "%(asctime)s - %(name)s - %(levelname)s - [%(filename)s:%(lineno)d] - %(message)s"
-    formatter = logging.Formatter(log_format)
-    
-    # Set up file handler with DEBUG level always (for detailed logs)
-    file_handler = logging.FileHandler(log_file)
-    file_handler.setFormatter(formatter)
-    file_handler.setLevel(logging.DEBUG)  # Always DEBUG for file
-    
-    # Set up console handler with the requested level
-    console_handler = logging.StreamHandler()
-    console_handler.setFormatter(formatter)
-    console_handler.setLevel(level)
-    
-    # Configure root logger
-    root_logger = logging.getLogger()
-    root_logger.setLevel(logging.DEBUG)  # Allows DEBUG messages to file
-    root_logger.handlers = []  # Remove any existing handlers
-    root_logger.addHandler(file_handler)
-    root_logger.addHandler(console_handler)
-    
-    # Add handler for FFmpeg output
-    ffmpeg_logger = logging.getLogger('ffmpeg')
-    ffmpeg_logger.setLevel(logging.DEBUG)
-    ffmpeg_file = log_dir / f"ffmpeg_{time.strftime('%Y%m%d_%H%M%S')}.log"
-    ffmpeg_handler = logging.FileHandler(ffmpeg_file)
-    ffmpeg_handler.setFormatter(formatter)
-    ffmpeg_logger.addHandler(ffmpeg_handler)
-    
-    # Log system information
-    logger = logging.getLogger(__name__)
-    logger.info(f"System: {sys.platform}")
-    logger.info(f"Python: {sys.version}")
-    logger.info(f"Log files: {log_file} and {ffmpeg_file}")
-    
-    return log_file
+
 if __name__ == "__main__":
     main()

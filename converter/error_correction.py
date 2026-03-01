@@ -4,7 +4,10 @@
 """
 
 import numpy as np
-from reedsolo import RSCodec
+try:
+    from reedsolo import RSCodec
+except ImportError:
+    RSCodec = None
 import logging
 from numba import njit, prange
 import io
@@ -28,6 +31,11 @@ class ReedSolomonEncoder:
             redundancy_bytes: 每个块添加的冗余字节数
             chunk_size: 处理块大小（最大255）
         """
+        if RSCodec is None:
+            raise ImportError(
+                "reedsolo package is required for ReedSolomonEncoder. "
+                "Install with: pip install reedsolo"
+            )
         # Reed-Solomon在GF(2^8)上工作，最大块大小为255
         self.chunk_size = min(255, chunk_size)
         self.data_bytes = self.chunk_size - redundancy_bytes

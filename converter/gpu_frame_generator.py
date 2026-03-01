@@ -4,7 +4,10 @@ Direct GPU memory operations for maximum throughput
 """
 
 import numpy as np
-import cupy as cp
+try:
+    import cupy as cp
+except ImportError:
+    cp = None
 import logging
 from typing import Iterator, Optional, Callable
 import os
@@ -52,6 +55,8 @@ class GPUFrameGenerator:
         self.bytes_per_frame = self.logical_width * self.logical_height * bits_per_pixel // 8
         
         # Check CUDA availability
+        if cp is None:
+            raise RuntimeError("CuPy not installed – GPU frame generation unavailable")
         if not self._check_cuda():
             raise RuntimeError("CUDA not available for GPU frame generation")
         

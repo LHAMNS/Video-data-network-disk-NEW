@@ -323,9 +323,12 @@ class ParallelVideoDecoder(VideoDecoder):
         # 设置工作线程数
         cpu_count = os.cpu_count()
         self.max_workers = max_workers or max(1, cpu_count - 1)
-        
+
         # 每个线程处理的帧数
         self.frames_per_worker = 100
+
+        # Shared lock for thread-safe progress updates
+        self._progress_lock = threading.Lock()
     
     def extract_data(self, callback=None):
         """
@@ -445,7 +448,7 @@ class ParallelVideoDecoder(VideoDecoder):
             frame_count += 1
             
             # 更新全局进度
-            with threading.Lock():
+            with self._progress_lock:
                 self.processed_frames += 1
                 
                 # 调用回调函数

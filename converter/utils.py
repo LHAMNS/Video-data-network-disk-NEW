@@ -197,41 +197,45 @@ class CacheManager:
         return self.metadata[cache_id]
     
     def _calculate_file_hash(self, filepath):
-        """计算文件哈希值"""
+        """计算文件哈希值 (Mercury 2 fixed: small file crash)"""
         hasher = hashlib.md5()
+        file_size = os.path.getsize(filepath)
         with open(filepath, 'rb') as f:
-            # 读取文件头和尾部来计算哈希，对大文件更高效
             head = f.read(8192)
-            f.seek(-8192, 2)
-            tail = f.read(8192)
-            
-            # 组合文件大小、头部和尾部计算哈希
-            file_size = filepath.stat().st_size
-            hasher.update(f"{file_size}".encode())
-            hasher.update(head)
-            hasher.update(tail)
-        
+            if file_size > 8192:
+                f.seek(-8192, os.SEEK_END)
+                tail = f.read(8192)
+            else:
+                tail = b""
+        hasher.update(str(file_size).encode())
+        hasher.update(head)
+        hasher.update(tail)
         return hasher.hexdigest()
 
 # 检测NVIDIA硬件编码器是否可用
 def is_nvenc_available():
-    """检测系统是否支持NVENC硬件加速"""
+    """检测系统是否支持NVENC硬件加速 (Mercury 2 fixed: timeout)"""
     try:
-        # 通过ffmpeg查询支持的编码器
         cmd = ["ffmpeg", "-encoders"]
-        result = subprocess.run(cmd, capture_output=True, text=True)
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=5)
         return "h264_nvenc" in result.stdout
+    except subprocess.TimeoutExpired:
+        logger.warning("NVENC check timed out")
+        return False
     except Exception as e:
         logger.warning(f"检测NVENC时出错: {e}")
         return False
 
 # 检测Intel QuickSync是否可用
 def is_qsv_available():
-    """检测系统是否支持Intel QuickSync硬件加速"""
+    """检测系统是否支持Intel QuickSync硬件加速 (Mercury 2 fixed: timeout)"""
     try:
         cmd = ["ffmpeg", "-encoders"]
-        result = subprocess.run(cmd, capture_output=True, text=True)
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=5)
         return "h264_qsv" in result.stdout
+    except subprocess.TimeoutExpired:
+        logger.warning("QSV check timed out")
+        return False
     except Exception as e:
         logger.warning(f"检测QSV时出错: {e}")
         return False

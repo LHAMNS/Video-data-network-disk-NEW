@@ -128,19 +128,28 @@ class SimpleAVIWriter:
     def close(self):
         if self._f is None:
             return
-        end_pos = self._f.tell()
-        movi_size = end_pos - self._movi_start
-        # fill movi size
-        self._f.seek(self._movi_size_offset)
-        self._f.write(struct.pack("<I", movi_size + 4))
-        # fill total frames
-        self._f.seek(self._avih_frames_offset)
-        self._f.write(struct.pack("<I", self._frame_count))
-        # fill RIFF size
-        self._f.seek(4)
-        self._f.write(struct.pack("<I", end_pos - 8))
-        self._f.close()
-        self._f = None
+        try:
+            end_pos = self._f.tell()
+            movi_size = end_pos - self._movi_start
+            # fill movi size
+            self._f.seek(self._movi_size_offset)
+            self._f.write(struct.pack("<I", movi_size + 4))
+            # fill total frames
+            self._f.seek(self._avih_frames_offset)
+            self._f.write(struct.pack("<I", self._frame_count))
+            # fill RIFF size
+            self._f.seek(4)
+            self._f.write(struct.pack("<I", end_pos - 8))
+        finally:
+            self._f.close()
+            self._f = None
+
+    def __enter__(self):
+        self.open()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
 
 
 def convert_bytes_to_avi(data: bytes, frame_generator, output_path: str, fps=30):

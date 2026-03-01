@@ -22,8 +22,17 @@ import mimetypes
 import hashlib
 import numpy as np
 
-from converter.gpu_error_correction import get_optimal_error_corrector
-from converter.gpu_frame_generator import GPUFrameGenerator
+# GPU modules – optional, fall back to CPU if unavailable
+try:
+    from converter.gpu_error_correction import get_optimal_error_corrector
+except (ImportError, RuntimeError):
+    get_optimal_error_corrector = None
+
+try:
+    from converter.gpu_frame_generator import GPUFrameGenerator
+except (ImportError, RuntimeError):
+    GPUFrameGenerator = None
+
 from converter.video_raptor_encoder import VideoRaptorEncoder
 
 # 添加项目根目录到路径
@@ -67,7 +76,7 @@ logger = logging.getLogger(__name__)
 # Initialize Flask and SocketIO
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(24)
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024 * 1024  # 16GB上传限制
+app.config['MAX_CONTENT_LENGTH'] = 4 * 1024 * 1024 * 1024  # 4GB上传限制 (reduced from 16GB to prevent OOM)
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading', ping_timeout=60, ping_interval=25)
 
 # 项目根目录
@@ -454,11 +463,20 @@ class ConversionTask:
 
             # ---------- 1.  GPU error-correction ----------
             if self.error_correction_enabled:
-                logger.info(f"Initializing Raptor error correction [{self.task_id}]")
-                self.error_correction = get_optimal_error_corrector(self.error_correction_ratio)
+                logger.info(f"Initializing error correction [{self.task_id}]")
+                if get_optimal_error_corrector is not None:
+                    self.error_correction = get_optimal_error_corrector(self.error_correction_ratio)
+                elif ReedSolomonEncoder is not None:
+                    self.error_correction = ReedSolomonEncoder()
+                    logger.info("Using CPU Reed-Solomon fallback")
+                else:
+                    logger.warning("No error correction available, disabling")
+                    self.error_correction_enabled = False
 
             # ---------- 2.  Frame generator ----------
             try:
+                if GPUFrameGenerator is None:
+                    raise RuntimeError("GPUFrameGenerator not available")
                 self.frame_generator = GPUFrameGenerator(
                     resolution=self.resolution,
                     fps=self.fps,
@@ -466,7 +484,7 @@ class ConversionTask:
                     nine_to_one=self.nine_to_one
                 )
                 logger.info(f"Using GPU-accelerated frame generator [{self.task_id}]")
-            except RuntimeError:
+            except (RuntimeError, TypeError):
                 generator_class = OptimizedFrameGenerator if self.use_optimized_generator else FrameGenerator
                 self.frame_generator = generator_class(
                     resolution=self.resolution,
@@ -904,32 +922,27 @@ def download_file_by_task(task_id):
 
 @app.route('/api/download/file/<path:filename>', methods=['GET'])
 def download_file_by_name(filename):
-    """通过文件名下载文件"""
+    """通过文件名下载文件 (Mercury 2 fixed: path traversal + MIME)"""
     try:
-        # 防止路径遍历
         safe_filename = Path(filename).name
-        file_path = OUTPUT_DIR / safe_filename
-
-        # 确保文件在OUTPUT_DIR内
-        if not file_path.resolve().is_relative_to(OUTPUT_DIR.resolve()):
+        file_path = (OUTPUT_DIR / safe_filename).resolve()
+        if file_path.parent != OUTPUT_DIR.resolve():
             logger.error(f"Path traversal attempt: {filename}")
             abort(403)
-
-        if not file_path.exists():
+        if not file_path.is_file():
             return jsonify({"error": "文件不存在"}), 404
-
-        # 获取MIME类型
         mime_type, _ = mimetypes.guess_type(file_path)
         if not mime_type:
-            mime_type = 'video/x-msvideo'
-
+            if file_path.suffix.lower() == ".avi":
+                mime_type = "video/x-msvideo"
+            else:
+                mime_type = "application/octet-stream"
         return send_file(
             file_path,
             as_attachment=True,
             download_name=safe_filename,
             mimetype=mime_type
         )
-    
     except Exception as e:
         logger.error(f"下载错误: {e}", exc_info=True)
         return jsonify({"error": str(e)}), 500

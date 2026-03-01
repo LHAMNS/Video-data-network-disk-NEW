@@ -4,7 +4,10 @@ High-performance CUDA implementation for NVIDIA GPUs
 """
 
 import numpy as np
-import cupy as cp
+try:
+    import cupy as cp
+except ImportError:
+    cp = None
 import logging
 from typing import Optional, Tuple
 import os
@@ -34,6 +37,8 @@ class GPUReedSolomonEncoder:
         self.data_bytes = self.block_size - self.redundancy_bytes
         
         # Check CUDA availability
+        if cp is None:
+            raise RuntimeError("CuPy not installed – GPU error correction unavailable")
         if not self._check_cuda():
             raise RuntimeError("CUDA not available")
         

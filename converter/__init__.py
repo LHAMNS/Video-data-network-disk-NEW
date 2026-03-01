@@ -58,7 +58,17 @@ CHUNK_SIZE = 1024 * 1024  # 1MB
 
 # 基础工具函数
 from .utils import *
-from .error_correction import ReedSolomonEncoder
+
+# Error correction - reedsolo may not be installed
+try:
+    from .error_correction import ReedSolomonEncoder
+except ImportError:
+    logging.getLogger(__name__).warning(
+        "reedsolo not installed – ReedSolomonEncoder unavailable. "
+        "Install with: pip install reedsolo"
+    )
+    ReedSolomonEncoder = None
+
 from .frame_generator import FrameGenerator, OptimizedFrameGenerator
 
 # 最后导入编码器类，解决循环依赖

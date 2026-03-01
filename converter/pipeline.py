@@ -93,10 +93,25 @@ class ConversionPipeline:
         return result
 
 
-# Example stages used by the web server
-from .error_correction import ReedSolomonEncoder
-from .frame_generator import FrameGenerator, OptimizedFrameGenerator
-from .encoder import StreamingVideoEncoder
+# Example stages used by the web server (Mercury 2 fixed: guarded imports)
+try:
+    from .error_correction import ReedSolomonEncoder
+except ImportError:
+    logging.getLogger(__name__).warning("Failed to import ReedSolomonEncoder")
+    ReedSolomonEncoder = None
+
+try:
+    from .frame_generator import FrameGenerator, OptimizedFrameGenerator
+except ImportError:
+    logging.getLogger(__name__).warning("Failed to import FrameGenerator")
+    FrameGenerator = None
+    OptimizedFrameGenerator = None
+
+try:
+    from .encoder import StreamingVideoEncoder
+except ImportError:
+    logging.getLogger(__name__).warning("Failed to import StreamingVideoEncoder")
+    StreamingVideoEncoder = None
 
 
 class ErrorCorrectionStage(Stage):
