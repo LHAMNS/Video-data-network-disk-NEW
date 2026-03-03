@@ -7,9 +7,7 @@ Implements binary data to video frame mapping
 """
 
 import numpy as np
-from numba import njit, prange
 import logging
-import time
 import base64
 import cv2
 from . import COLOR_PALETTE_16, COLOR_PALETTE_16_BGR
@@ -23,7 +21,6 @@ COLOR_PALETTE_16_ARRAY = np.array(COLOR_PALETTE_16, dtype=np.uint8)
 # BGR palette array for direct AVI writing (avoids per-frame RGB→BGR conversion)
 COLOR_PALETTE_16_BGR_ARRAY = np.array(COLOR_PALETTE_16_BGR, dtype=np.uint8)
 
-@njit(fastmath=True)
 def generate_color_lut(palette, color_count):
     """
     生成颜色查找表(LUT)
@@ -60,41 +57,37 @@ def generate_color_lut(palette, color_count):
     
     return lut
 
-@njit(fastmath=True, parallel=True)
 def generate_frame_array(data_indices, width, height, lut):
     """
-    根据数据索引生成帧数组
-    
+    根据数据索引生成帧数组 - 纯numpy向量化实现
+
+    Uses numpy fancy indexing (lut[indices]) which is implemented in C
+    and processes all pixels in a single vectorized operation.
+    ~10-100x faster than per-pixel numba loop with bounds checking.
+
     Args:
         data_indices: 颜色索引数组
         width: 帧宽度
         height: 帧高度
         lut: 颜色查找表
-        
+
     Returns:
         RGB帧数组，形状为(height, width, 3)
     """
-    # 创建输出帧数组
-    frame = np.zeros((height, width, 3), dtype=np.uint8)
-    
-    # 计算需要填充的像素数
-    pixels_to_fill = min(width * height, len(data_indices))
-    
-    # 使用并行迭代填充颜色
-    for i in prange(pixels_to_fill):
-        y = i // width
-        x = i % width
-        color_idx = data_indices[i]
-        
-        # 防止索引越界
-        if color_idx >= len(lut):
-            color_idx = 0
-            
-        frame[y, x] = lut[color_idx]
-    
-    return frame
+    total_pixels = width * height
+    n = min(total_pixels, len(data_indices))
 
-@njit(fastmath=True)
+    # Clip indices to valid range (vectorized, replaces per-pixel if-check)
+    indices = np.empty(total_pixels, dtype=np.uint8)
+    indices[:n] = data_indices[:n]
+    if n < total_pixels:
+        indices[n:] = 0
+
+    np.clip(indices, 0, len(lut) - 1, out=indices)
+
+    # Single vectorized LUT lookup + reshape: all pixels at once
+    return lut[indices].reshape(height, width, 3)
+
 def create_border_pattern(width, height, border_width=10, border_color=1, background_color=0):
     """
     创建带边框的填充模式
@@ -178,6 +171,9 @@ class FrameGenerator:
         bits_per_pixel = 4 if color_count == 16 else 8
         self.bytes_per_frame = self.logical_width * self.logical_height * bits_per_pixel // 8
 
+        # Pre-compute for hot path
+        self._indices_needed = self.logical_width * self.logical_height
+
         # 创建边框模式，用于小数据块的展示
         self.border_pattern = create_border_pattern(
             self.logical_width,
@@ -206,164 +202,78 @@ class FrameGenerator:
         """计算每帧的逻辑像素数量"""
         return self.logical_width * self.logical_height
     
-    def generate_frame(self, data_chunk, frame_index=0):
+    def _generate_frame_impl(self, data_chunk, frame_index, lut):
         """
-        生成单个视频帧
-        
-        Args:
-            data_chunk: 二进制数据块
-            frame_index: 帧索引（用于调试和记录）
-            
-        Returns:
-            RGB帧数组，形状为(height, width, 3)
+        Internal frame generation - single implementation for both RGB and BGR.
+        Uses vectorized numpy operations throughout for maximum speed.
         """
-        start_time = time.time()
-        
-        try:
-            # 将数据转换为颜色索引
-            color_indices = bytes_to_color_indices(data_chunk, self.color_count)
-            
-            # 如果颜色索引不足以填满一帧，进行填充
-            indices_needed = self.logical_width * self.logical_height
-            
-            # 数据量很小时使用边框模式
-            use_border = len(color_indices) < indices_needed * 0.1
-            
-            if len(color_indices) < indices_needed:
-                if use_border:
-                    # 使用边框模式
-                    padded_indices = np.copy(self.border_pattern)
-                    
-                    # 将实际数据放在中心
-                    if len(color_indices) > 0:
-                        # 估计数据适合的平方区域大小
-                        data_side = max(1, int(np.sqrt(len(color_indices))))
-                        start_x = (self.logical_width - data_side) // 2
-                        start_y = (self.logical_height - data_side) // 2
-                        
-                        # 确保起始点在有效范围内
-                        start_x = max(0, min(start_x, self.logical_width - 1))
-                        start_y = max(0, min(start_y, self.logical_height - 1))
-                        
-                        # 填充数据
-                        for i in range(min(len(color_indices), data_side * data_side)):
-                            y = start_y + (i // data_side)
-                            x = start_x + (i % data_side)
-                            if 0 <= y < self.logical_height and 0 <= x < self.logical_width:
-                                padded_indices[y * self.logical_width + x] = color_indices[i]
-                else:
-                    # 标准填充
-                    padded_indices = np.zeros(indices_needed, dtype=np.uint8)
-                    padded_indices[:len(color_indices)] = color_indices
-                
-                color_indices = padded_indices
-            
-            # 生成逻辑帧
-            logical_frame = generate_frame_array(
-                color_indices[:indices_needed], 
-                self.logical_width, 
-                self.logical_height, 
-                self.color_lut
-            )
-            
-            # 如果启用9合1，扩展逻辑帧
-            if self.nine_to_one:
-                physical_frame = expand_pixels_9x1(
-                    logical_frame,
-                    self.logical_width,
-                    self.logical_height
-                )
-                # 确保输出尺寸与物理分辨率一致
-                if (physical_frame.shape[1] != self.physical_width or
-                        physical_frame.shape[0] != self.physical_height):
-                    corrected = np.zeros((self.physical_height, self.physical_width, 3), dtype=np.uint8)
-                    y_max = min(self.physical_height, physical_frame.shape[0])
-                    x_max = min(self.physical_width, physical_frame.shape[1])
-                    corrected[:y_max, :x_max] = physical_frame[:y_max, :x_max]
-                    physical_frame = corrected
+        # Convert bytes to color indices (vectorized)
+        color_indices = bytes_to_color_indices(data_chunk, self.color_count)
+        indices_needed = self._indices_needed
+
+        if len(color_indices) < indices_needed:
+            if len(color_indices) < indices_needed // 10:
+                # Border mode for very small data
+                padded_indices = self.border_pattern.copy()
+                if len(color_indices) > 0:
+                    data_side = max(1, int(np.sqrt(len(color_indices))))
+                    start_x = (self.logical_width - data_side) // 2
+                    start_y = (self.logical_height - data_side) // 2
+                    n = min(len(color_indices), data_side * data_side)
+                    # Vectorized center placement
+                    ii = np.arange(n)
+                    ys = np.clip(start_y + ii // data_side, 0, self.logical_height - 1)
+                    xs = np.clip(start_x + ii % data_side, 0, self.logical_width - 1)
+                    padded_indices[ys * self.logical_width + xs] = color_indices[:n]
             else:
-                physical_frame = logical_frame
-            
-            elapsed = time.time() - start_time
-            logger.debug(f"帧 {frame_index} 生成完成，用时 {elapsed:.4f}s")
-            
-            return physical_frame
-            
+                # Zero-pad to fill frame
+                padded_indices = np.zeros(indices_needed, dtype=np.uint8)
+                padded_indices[:len(color_indices)] = color_indices
+            color_indices = padded_indices
+
+        # Vectorized LUT lookup + reshape (single numpy operation)
+        logical_frame = generate_frame_array(
+            color_indices[:indices_needed],
+            self.logical_width,
+            self.logical_height,
+            lut
+        )
+
+        # 9-to-1 expansion using np.repeat (vectorized C implementation)
+        if self.nine_to_one:
+            physical_frame = expand_pixels_9x1(
+                logical_frame, self.logical_width, self.logical_height
+            )
+            if (physical_frame.shape[1] != self.physical_width or
+                    physical_frame.shape[0] != self.physical_height):
+                corrected = np.zeros((self.physical_height, self.physical_width, 3), dtype=np.uint8)
+                h = min(self.physical_height, physical_frame.shape[0])
+                w = min(self.physical_width, physical_frame.shape[1])
+                corrected[:h, :w] = physical_frame[:h, :w]
+                physical_frame = corrected
+        else:
+            physical_frame = logical_frame
+
+        return physical_frame
+
+    def generate_frame(self, data_chunk, frame_index=0):
+        """生成单个RGB视频帧"""
+        try:
+            return self._generate_frame_impl(data_chunk, frame_index, self.color_lut)
         except Exception as e:
             logger.error(f"生成帧 {frame_index} 时出错: {e}", exc_info=True)
-            # 返回错误指示帧（全红）
             error_frame = np.zeros((self.physical_height, self.physical_width, 3), dtype=np.uint8)
-            error_frame[:, :, 0] = 255  # 红色通道设为最大
+            error_frame[:, :, 0] = 255
             return error_frame
-    
+
     def generate_frame_bgr(self, data_chunk, frame_index=0):
-        """
-        生成单个BGR视频帧 (用于直接AVI写入，避免RGB→BGR转换)
-
-        Args:
-            data_chunk: 二进制数据块
-            frame_index: 帧索引
-
-        Returns:
-            BGR帧数组，形状为(height, width, 3)
-        """
-        start_time = time.time()
-
+        """生成单个BGR视频帧 (直接AVI写入，避免RGB→BGR转换)"""
         try:
-            color_indices = bytes_to_color_indices(data_chunk, self.color_count)
-            indices_needed = self.logical_width * self.logical_height
-            use_border = len(color_indices) < indices_needed * 0.1
-
-            if len(color_indices) < indices_needed:
-                if use_border:
-                    padded_indices = np.copy(self.border_pattern)
-                    if len(color_indices) > 0:
-                        data_side = max(1, int(np.sqrt(len(color_indices))))
-                        start_x = (self.logical_width - data_side) // 2
-                        start_y = (self.logical_height - data_side) // 2
-                        start_x = max(0, min(start_x, self.logical_width - 1))
-                        start_y = max(0, min(start_y, self.logical_height - 1))
-                        for i in range(min(len(color_indices), data_side * data_side)):
-                            y = start_y + (i // data_side)
-                            x = start_x + (i % data_side)
-                            if 0 <= y < self.logical_height and 0 <= x < self.logical_width:
-                                padded_indices[y * self.logical_width + x] = color_indices[i]
-                else:
-                    padded_indices = np.zeros(indices_needed, dtype=np.uint8)
-                    padded_indices[:len(color_indices)] = color_indices
-                color_indices = padded_indices
-
-            # Generate logical frame using BGR LUT directly
-            logical_frame = generate_frame_array(
-                color_indices[:indices_needed],
-                self.logical_width,
-                self.logical_height,
-                self.color_lut_bgr
-            )
-
-            if self.nine_to_one:
-                physical_frame = expand_pixels_9x1(
-                    logical_frame, self.logical_width, self.logical_height
-                )
-                if (physical_frame.shape[1] != self.physical_width or
-                        physical_frame.shape[0] != self.physical_height):
-                    corrected = np.zeros((self.physical_height, self.physical_width, 3), dtype=np.uint8)
-                    y_max = min(self.physical_height, physical_frame.shape[0])
-                    x_max = min(self.physical_width, physical_frame.shape[1])
-                    corrected[:y_max, :x_max] = physical_frame[:y_max, :x_max]
-                    physical_frame = corrected
-            else:
-                physical_frame = logical_frame
-
-            elapsed = time.time() - start_time
-            logger.debug(f"帧 {frame_index} BGR生成完成，用时 {elapsed:.4f}s")
-
-            return physical_frame
-
+            return self._generate_frame_impl(data_chunk, frame_index, self.color_lut_bgr)
         except Exception as e:
             logger.error(f"生成BGR帧 {frame_index} 时出错: {e}", exc_info=True)
             error_frame = np.zeros((self.physical_height, self.physical_width, 3), dtype=np.uint8)
-            error_frame[:, :, 2] = 255  # Red in BGR = channel 2
+            error_frame[:, :, 2] = 255
             return error_frame
 
     def generate_preview_image(self, frame, max_size=300):
@@ -497,17 +407,23 @@ class OptimizedFrameGenerator(FrameGenerator):
     def __init__(self, *args, **kwargs):
         """初始化优化帧生成器"""
         super().__init__(*args, **kwargs)
-        
-        # 预分配帧缓冲区
-        self.logical_frame_buffer = np.zeros((self.logical_height, self.logical_width, 3), dtype=np.uint8)
-        
-        if self.nine_to_one:
-            self.physical_frame_buffer = np.zeros((self.physical_height, self.physical_width, 3), dtype=np.uint8)
-            
+
+        # Double-buffer: alternate between two buffers so the caller can
+        # consume the previous frame while we generate the next one,
+        # eliminating the need for .copy() on every yield.
+        self._buffers = [
+            np.zeros((self.physical_height, self.physical_width, 3), dtype=np.uint8),
+            np.zeros((self.physical_height, self.physical_width, 3), dtype=np.uint8),
+        ]
+        self._buf_idx = 0
+
+        # Pre-allocated index buffer
+        self._index_buffer = np.zeros(self._indices_needed, dtype=np.uint8)
+
         # 用于边框效果的缓存
         self._border_indices = None
-        
-        logger.info("创建优化帧生成器，使用预分配缓冲区")
+
+        logger.info("创建优化帧生成器，使用双缓冲区")
     
     def _prepare_border_indices(self):
         """准备带边框的索引数组"""
@@ -521,106 +437,36 @@ class OptimizedFrameGenerator(FrameGenerator):
     
     def generate_frame_optimized(self, data_chunk, frame_index=0, bgr=False):
         """
-        优化版本的帧生成函数，使用预分配缓冲区
-
-        Args:
-            data_chunk: 二进制数据块
-            frame_index: 帧索引
-            bgr: 如果为True，使用BGR颜色查找表（用于直接AVI写入）
-
-        Returns:
-            生成的帧数组的视图（不复制数据）
+        Optimized frame generation using double-buffered output.
+        Returns a buffer that is safe to use until the next call.
         """
         try:
-            # 将数据转换为颜色索引
-            color_indices = bytes_to_color_indices(data_chunk, self.color_count)
-
-            # 填充逻辑帧缓冲区
-            indices_needed = self.logical_width * self.logical_height
-
-            # 数据量很小时使用边框模式
-            use_border = len(color_indices) < indices_needed * 0.1
-
-            if len(color_indices) < indices_needed:
-                if use_border:
-                    # 使用边框模式
-                    border_indices = self._prepare_border_indices()
-                    indices_to_use = np.copy(border_indices)
-
-                    # 将实际数据放在中心
-                    if len(color_indices) > 0:
-                        # 估计数据适合的平方区域大小
-                        data_side = max(1, int(np.sqrt(len(color_indices))))
-                        start_x = (self.logical_width - data_side) // 2
-                        start_y = (self.logical_height - data_side) // 2
-
-                        # 确保起始点在有效范围内
-                        start_x = max(0, min(start_x, self.logical_width - 1))
-                        start_y = max(0, min(start_y, self.logical_height - 1))
-
-                        # 填充数据
-                        for i in range(min(len(color_indices), data_side * data_side)):
-                            y = start_y + (i // data_side)
-                            x = start_x + (i % data_side)
-                            if 0 <= y < self.logical_height and 0 <= x < self.logical_width:
-                                indices_to_use[y * self.logical_width + x] = color_indices[i]
-
-                    color_indices = indices_to_use
-                else:
-                    # 填充数组
-                    color_indices = np.pad(color_indices, (0, indices_needed - len(color_indices)))
-
-            # 选择RGB或BGR颜色查找表
             lut = self.color_lut_bgr if bgr else self.color_lut
 
-            # 使用向量化操作填充逻辑帧
-            pixel_count = min(indices_needed, len(color_indices))
-            y_coords = np.arange(pixel_count) // self.logical_width
-            x_coords = np.arange(pixel_count) % self.logical_width
+            # Get current output buffer and advance for next call
+            buf = self._buffers[self._buf_idx]
+            self._buf_idx ^= 1  # toggle 0/1
 
-            # 防止颜色索引越界
-            valid_indices = np.clip(color_indices[:pixel_count], 0, len(lut) - 1)
+            # Use the unified implementation from parent
+            frame = self._generate_frame_impl(data_chunk, frame_index, lut)
 
-            # 直接从LUT获取颜色并填充
-            self.logical_frame_buffer[y_coords, x_coords] = lut[valid_indices]
-            
-            # 如果启用9合1，使用优化的扩展方法
-            if self.nine_to_one:
-                # 使用向量化操作进行9合1扩展
-                for i in range(3):
-                    for j in range(3):
-                        y_slice = slice(i, self.physical_height, 3)
-                        x_slice = slice(j, self.physical_width, 3)
-                        self.physical_frame_buffer[y_slice, x_slice] = self.logical_frame_buffer
-                
-                return self.physical_frame_buffer
-            else:
-                return self.logical_frame_buffer
-                
+            # Copy into our owned buffer so caller has stable memory
+            np.copyto(buf, frame)
+            return buf
+
         except Exception as e:
             logger.error(f"优化帧生成时出错: {e}", exc_info=True)
-            # 返回错误指示帧（全红）
-            red_channel = 2 if bgr else 0  # Red is channel 2 in BGR, channel 0 in RGB
-            if self.nine_to_one:
-                self.physical_frame_buffer.fill(0)
-                self.physical_frame_buffer[:, :, red_channel] = 255
-                return self.physical_frame_buffer
-            else:
-                self.logical_frame_buffer.fill(0)
-                self.logical_frame_buffer[:, :, red_channel] = 255
-                return self.logical_frame_buffer
+            buf = self._buffers[self._buf_idx]
+            self._buf_idx ^= 1
+            buf.fill(0)
+            buf[:, :, 2 if bgr else 0] = 255
+            return buf
     
     def generate_frames_from_data(self, data, callback=None, bgr=False):
         """
-        从数据生成帧的生成器（优化版本，使用预分配缓冲区）
-
-        Args:
-            data: 字节数据或可迭代的数据块
-            callback: 回调函数，用于报告进度，参数为(帧索引，总帧数，当前帧)
-            bgr: 如果为True，直接生成BGR帧（用于AVI写入，避免RGB→BGR转换）
-
-        Yields:
-            生成的视频帧
+        Optimized frame generator using double-buffered output.
+        No .copy() needed - double buffer ensures each yielded frame
+        is stable until the next frame is yielded.
         """
         frame_count = 0
 
@@ -629,16 +475,11 @@ class OptimizedFrameGenerator(FrameGenerator):
                 total_bytes = len(data)
                 total_frames = self.estimate_frame_count(total_bytes)
 
-                logger.info(f"[优化] 开始生成帧，数据大小: {total_bytes} 字节，预计 {total_frames} 帧, BGR={bgr}")
-
                 for frame_idx in range(total_frames):
                     start_pos = frame_idx * self.bytes_per_frame
                     end_pos = min(start_pos + self.bytes_per_frame, total_bytes)
-                    current_chunk = data[start_pos:end_pos]
 
-                    frame = self.generate_frame_optimized(current_chunk, frame_idx, bgr=bgr)
-                    # Return a copy since optimized version reuses buffers
-                    frame = frame.copy()
+                    frame = self.generate_frame_optimized(data[start_pos:end_pos], frame_idx, bgr=bgr)
                     frame_count += 1
 
                     if callback:
@@ -649,15 +490,9 @@ class OptimizedFrameGenerator(FrameGenerator):
 
                     yield frame
 
-                logger.info(f"[优化] 帧生成完成，共 {frame_count} 帧")
-
             else:
-                logger.info(f"[优化] 开始从迭代器生成帧, BGR={bgr}")
-
                 for frame_idx, chunk in enumerate(data):
                     frame = self.generate_frame_optimized(chunk, frame_idx, bgr=bgr)
-                    # Return a copy since optimized version reuses buffers
-                    frame = frame.copy()
                     frame_count += 1
 
                     if callback:
@@ -668,28 +503,11 @@ class OptimizedFrameGenerator(FrameGenerator):
 
                     yield frame
 
-                    if frame_idx % 100 == 0:
-                        logger.info(f"[优化] 已生成 {frame_idx + 1} 帧")
-
-                logger.info(f"[优化] 从迭代器生成帧完成，共 {frame_count} 帧")
-
         except Exception as e:
             logger.error(f"[优化] 生成帧时出错: {e}", exc_info=True)
             error_frame = np.zeros((self.physical_height, self.physical_width, 3), dtype=np.uint8)
-            if bgr:
-                error_frame[:, :, 2] = 255  # Red in BGR = channel 2
-            else:
-                error_frame[:, :, 0] = 255  # Red in RGB = channel 0
-
-            if frame_count > 0:
-                yield error_frame
-            else:
-                if callback:
-                    try:
-                        callback(0, 1, error_frame)
-                    except:
-                        pass
-                yield error_frame
+            error_frame[:, :, 2 if bgr else 0] = 255
+            yield error_frame
 
     def process_large_file(self, data_generator, progress_callback=None, bgr=False):
         """

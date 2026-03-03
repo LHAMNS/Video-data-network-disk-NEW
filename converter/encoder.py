@@ -47,10 +47,15 @@ class DirectAVIEncoder:
         self.bytes_written = 0
         self.start_time = 0
 
+        # Pre-computed frame size (avoids frame.nbytes on every frame)
+        self._frame_size = width * height * 3
+
         # Performance metrics - use deque with bounded size to avoid memory leak
         self._recent_write_times = deque(maxlen=100)
         self.max_write_time = 0
         self.min_write_time = float('inf')
+        # Running sum for O(1) average calculation
+        self._write_time_sum = 0.0
 
         # BGR mode: when True, incoming frames are already in BGR format
         self._bgr_mode = False
@@ -93,45 +98,42 @@ class DirectAVIEncoder:
     def add_frame(self, frame):
         """
         Add frame to AVI. Respects BGR mode for zero-copy writes.
-
-        Args:
-            frame: Frame as numpy array (height, width, 3).
-                   RGB if bgr_mode=False, BGR if bgr_mode=True.
-
-        Returns:
-            bool: Success status
+        Timing is sampled every 50th frame to minimize hot-path overhead.
         """
         if not self.running or self.avi_writer is None:
-            logger.warning("Encoder not running")
             return False
 
         try:
-            write_start = time.time()
+            self.frames_written += 1
+            do_timing = (self.frames_written % 50 == 0)
+
+            if do_timing:
+                write_start = time.time()
 
             if self._bgr_mode:
                 self.avi_writer.add_bgr_frame(frame)
             else:
                 self.avi_writer.add_rgb_frame(frame)
 
-            write_time = time.time() - write_start
-            self._recent_write_times.append(write_time)
-            self.max_write_time = max(self.max_write_time, write_time)
-            self.min_write_time = min(self.min_write_time, write_time)
+            self.bytes_written += self._frame_size
 
-            self.frames_written += 1
-            self.bytes_written += frame.nbytes
+            if do_timing:
+                write_time = time.time() - write_start
+                self._recent_write_times.append(write_time)
+                if write_time > self.max_write_time:
+                    self.max_write_time = write_time
+                if write_time < self.min_write_time:
+                    self.min_write_time = write_time
 
-            # Log performance every 100 frames
-            if self.frames_written % 100 == 0:
+            # Log performance every 200 frames
+            if self.frames_written % 200 == 0 and self._recent_write_times:
                 avg_write_time = sum(self._recent_write_times) / len(self._recent_write_times)
                 if avg_write_time > 0:
-                    throughput_mbps = (frame.nbytes / avg_write_time) / (1024 * 1024)
-                else:
-                    throughput_mbps = 0
-                logger.info(
-                    f"Frame {self.frames_written}: avg write {avg_write_time*1000:.2f}ms, "
-                    f"throughput {throughput_mbps:.1f} MB/s"
-                )
+                    throughput_mbps = (self._frame_size / avg_write_time) / (1024 * 1024)
+                    logger.info(
+                        f"Frame {self.frames_written}: avg write {avg_write_time*1000:.2f}ms, "
+                        f"throughput {throughput_mbps:.1f} MB/s"
+                    )
 
             return True
 
